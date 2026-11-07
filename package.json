@@ -1,0 +1,16 @@
+{
+  "name": "pip-study-3000",
+  "version": "1.0.0",
+  "description": "PIP-STUDY 3000 RPG Study Tracker",
+  "main": "www/index.html",
+  "scripts": {
+    "cap:add": "npx cap add android",
+    "cap:sync": "npx cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/status-bar": "^6.0.0"
+  }
+}

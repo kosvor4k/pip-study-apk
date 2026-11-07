@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#071209">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PIP-STUDY">
+    <title>PIP-STUDY 3000 Mobile // Карманный Учебный Терминал</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --pip-primary: #22ff66;
+            --pip-primary-dim: rgba(34, 255, 102, 0.18);
+            --pip-primary-glow: rgba(34, 255, 102, 0.55);
+            --pip-bg: #061008;
+            --pip-panel: #0b1c0e;
+            --pip-accent: #b8ffce;
+            --pip-danger: #ff4d6d;
+        }
+
+        [data-theme="amber"] {
+            --pip-primary: #ffb642;
+            --pip-primary-dim: rgba(255, 182, 66, 0.18);
+            --pip-primary-glow: rgba(255, 182, 66, 0.55);
+            --pip-bg: #120c03;
+            --pip-panel: #1d1406;
+            --pip-accent: #ffe4b5;
+        }
+
+        [data-theme="blue"] {
+            --pip-primary: #38e0ff;
+            --pip-primary-dim: rgba(56, 224, 255, 0.18);
+            --pip-primary-glow: rgba(56, 224, 255, 0.55);
+            --pip-bg: #041016;
+            --pip-panel: #081c26;
+            --pip-accent: #c4f6ff;
+        }
+
+        [data-theme="crimson"] {
+            --pip-primary: #ff4d6d;
+            --pip-primary-dim: rgba(255, 77, 109, 0.18);
+            --pip-primary-glow: rgba(255, 77, 109, 0.55);
+            --pip-bg: #140408;
+            --pip-panel: #22080f;
+            --pip-accent: #ffc2cd;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            scrollbar-width: thin;
+            scrollbar-color: var(--pip-primary) transparent;
+        }
+
+        *::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        *::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        *::-webkit-scrollbar-thumb {
+            background-color: var(--pip-primary);
+            border-radius: 4px;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #020503;
+            color: var(--pip-primary);
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100dvh;
+            width: 100vw;
+            text-shadow: 0 0 5px var(--pip-primary-glow);
+            user-select: none;
+        }
+
+        /* Phone Frame Wrapper for Desktop vs Fullscreen Mobile */
+        .app-viewport {
+            width: 100%;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at center, #0e2213 0%, #020503 100%);
+        }
+
+        .phone-shell {
+            width: 100%;
+            height: 100dvh;
+            background-color: var(--pip-bg);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @media (min-width: 640px) {
+            body.phone-frame-mode .phone-shell {
+                max-width: 430px;
+                height: min(92dvh, 880px);
+                border-radius: 38px;
+                border: 6px solid #1b281e;
+                box-shadow:
+                    0 0 0 2px var(--pip-primary),
+                    0 20px 60px rgba(0, 0, 0, 0.9),
+                    0 0 35px var(--pip-primary-dim);
+            }
+        }
+
+        /* CRT Overlay inside Phone Screen */
+        .crt-overlay {
+            pointer-events: none;
+            position: absolute;
+            inset: 0;
+            z-index: 60;
+            background:
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.26) 50%),
+                radial-gradient(circle at center, transparent 62%, rgba(0, 0, 0, 0.55) 100%);
+            background-size: 100% 4px, 100% 100%;
+            opacity: 0.85;
+        }
+
+        .crt-off .crt-overlay {
+            display: none;
+        }
+
+        /* Pip-Boy Borders & Cards */
+        .pip-border {
+            border: 1.5px solid var(--pip-primary);
+            box-shadow: 0 0 10px var(--pip-primary-dim), inset 0 0 8px var(--pip-primary-dim);
+            background-color: var(--pip-panel);
+        }
+
+        .pip-card {
+            border: 1px solid var(--pip-primary);
+            background: linear-gradient(180deg, var(--pip-primary-dim) 0%, rgba(0, 0, 0, 0.55) 100%);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+        }
+
+        .pip-box-subtle {
+            border: 1px solid var(--pip-primary-dim);
+            background-color: rgba(0, 0, 0, 0.38);
+        }
+
+        /* Tactile Mobile Buttons */
+        .pip-btn {
+            border: 1.5px solid var(--pip-primary);
+            color: var(--pip-primary);
+            background-color: rgba(0, 0, 0, 0.45);
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            transition: transform 0.1s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+        }
+
+        .pip-btn:active {
+            transform: scale(0.94);
+            background-color: var(--pip-primary);
+            color: var(--pip-bg);
+            text-shadow: none;
+        }
+
+        .pip-btn-solid {
+            background-color: var(--pip-primary);
+            color: var(--pip-bg);
+            border: 1.5px solid var(--pip-primary);
+            font-weight: 800;
+            text-shadow: none;
+            box-shadow: 0 0 12px var(--pip-primary-glow);
+        }
+
+        .pip-btn-solid:active {
+            transform: scale(0.94);
+            opacity: 0.9;
+        }
+
+        .pip-input {
+            background-color: rgba(0, 0, 0, 0.65);
+            border: 1.5px solid var(--pip-primary);
+            color: var(--pip-primary);
+            outline: none;
+            padding: 0.65rem 0.75rem;
+            border-radius: 0.6rem;
+            font-size: 0.875rem;
+            width: 100%;
+        }
+
+        .pip-input:focus {
+            box-shadow: 0 0 12px var(--pip-primary-glow);
+        }
+
+        .pip-input::placeholder {
+            color: var(--pip-primary);
+            opacity: 0.45;
+        }
+
+        /* Segmented Progress Bar */
+        .pip-progress-track {
+            background-color: rgba(0, 0, 0, 0.75);
+            border: 1px solid var(--pip-primary);
+            padding: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pip-progress-fill {
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                var(--pip-primary),
+                var(--pip-primary) 7px,
+                transparent 7px,
+                transparent 9px
+            );
+            box-shadow: 0 0 8px var(--pip-primary-glow);
+            transition: width 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* Bottom Sheet Slide Animation */
+        .bottom-sheet-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.78);
+            backdrop-filter: blur(2px);
+            z-index: 70;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.22s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .bottom-sheet-backdrop.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .bottom-sheet-panel {
+            background-color: var(--pip-panel);
+            border-top: 2px solid var(--pip-primary);
+            box-shadow: 0 -8px 30px var(--pip-primary-dim);
+            border-top-left-radius: 1.35rem;
+            border-top-right-radius: 1.35rem;
+            transform: translateY(100%);
+            transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+            max-height: 88%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bottom-sheet-backdrop.open .bottom-sheet-panel {
+            transform: translateY(0);
+        }
+
+        /* Top Toast Notification */
+        .pip-toast {
+            position: absolute;
+            top: 0.75rem;
+            left: 1rem;
+            right: 1rem;
+            z-index: 85;
+            transform: translateY(-140%);
+            transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+            pointer-events: none;
+        }
+
+        .pip-toast.show {
+            transform: translateY(0);
+        }
+
+        /* Floating +XP Effect */
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(0.95); }
+            50% { opacity: 1; transform: translateY(-20px) scale(1.08); }
+            100% { opacity: 0; transform: translateY(-42px) scale(0.95); }
+        }
+
+        .floating-xp {
+            position: fixed;
+            pointer-events: none;
+            z-index: 99;
+            font-weight: 800;
+            color: var(--pip-accent);
+            text-shadow: 0 0 8px var(--pip-primary);
+            animation: floatUp 0.85s ease-out forwards;
+        }
+
+        /* Bottom Nav Active Indicator */
+        .nav-tab-btn {
+            position: relative;
+            transition: all 0.15s ease;
+            opacity: 0.65;
+        }
+        .nav-tab-btn.active {
+            opacity: 1;
+            background-color: var(--pip-primary-dim);
+            box-shadow: inset 0 2px 0 var(--pip-primary);
+        }
+        .nav-tab-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="phone-frame-mode">
+
+    <div class="app-viewport">
+        <!-- Desktop Top Floating Bar (Only visible on larger screens to toggle Phone Frame vs Fullscreen) -->
+        <div class="hidden sm:flex items-center justify-between w-full max-w-[430px] mb-2 px-2 text-xs opacity-85">
+            <span class="font-bold tracking-wider"><i class="fa-solid fa-mobile-screen-button mr-1"></i>PIP-STUDY 3000 MOBILE</span>
+            <button onclick="toggleFrameMode()" id="frameModeBtn" class="px-2.5 py-1 rounded border border-current hover:bg-[var(--pip-primary)] hover:text-black transition font-bold">
+                <i class="fa-solid fa-expand mr-1"></i>На весь экран
+            </button>
+        </div>
+
+        <!-- PHONE SHELL CONTAINER -->
+        <div class="phone-shell" id="phoneShell">
+
+            <!-- CRT Overlay -->
+            <div class="crt-overlay"></div>
+
+            <!-- TOP TOAST NOTIFICATION -->
+            <div id="pipToast" class="pip-toast">
+                <div class="pip-border rounded-xl px-3.5 py-2.5 flex items-center justify-between shadow-lg">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <i class="fa-solid fa-bolt text-base shrink-0"></i>
+                        <span id="pipToastText" class="text-xs font-bold truncate">+15 XP • Решение практики</span>
+                    </div>
+                    <span id="pipToastBadge" class="text-xs font-extrabold px-2 py-0.5 rounded bg-[var(--pip-primary)] text-[var(--pip-bg)] shrink-0 ml-2">
+                        +15 XP
+                    </span>
+                </div>
+            </div>
+
+            <!-- MOBILE STATUS & CHARACTER HEADER -->
+            <header class="pt-2.5 pb-2.5 px-3.5 border-b border-[var(--pip-primary)] bg-black/50 shrink-0 z-20">
+                <!-- Status bar row -->
+                <div class="flex items-center justify-between text-[11px] opacity-80 mb-2">
+                    <div class="flex items-center gap-1.5 font-bold">
+                        <i class="fa-solid fa-radiation fa-spin" style="animation-duration: 12s;"></i>
+                        <span>VAULT-OS 3.5</span>
+                        <span>•</span>
+                        <span id="mobileClock">12:00</span>
+                    </div>
+                    <div class="flex items-center gap-2.5">
+                        <!-- Streak Counter -->
+                        <div class="flex items-center gap-1 px-1.5 py-0.5 rounded border border-current" title="Дней учебы подряд">
+                            <i class="fa-solid fa-fire"></i>
+                            <span id="headerStreak" class="font-extrabold">1 дн.</span>
+                        </div>
+                        <button onclick="toggleSound()" class="p-1" aria-label="Звук">
+                            <i id="headerSoundIcon" class="fa-solid fa-volume-high"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Character Compact Bar -->
+                <div class="flex items-center gap-3">
+                    <button onclick="openSheet('profileSheet')" class="w-11 h-11 rounded-xl pip-border flex flex-col items-center justify-center shrink-0 active:scale-95 transition">
+                        <span class="text-[9px] uppercase opacity-75 leading-none">УР.</span>
+                        <span id="headerLevelNum" class="text-base font-extrabold leading-tight">1</span>
+                    </button>
+
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between gap-1 mb-1">
+                            <button onclick="openSheet('profileSheet')" class="font-extrabold text-sm truncate text-left flex items-center gap-1.5">
+                                <span id="headerStudentName" class="truncate">Студент-Выживший</span>
+                                <i class="fa-solid fa-pen text-[10px] opacity-65"></i>
+                            </button>
+                            <span class="text-[11px] font-mono shrink-0">
+                                <strong id="headerCurrentXP">0</strong>/<span id="headerMaxXP">200</span> XP
+                            </span>
+                        </div>
+
+                        <div class="pip-progress-track h-2.5 rounded-md">
+                            <div id="headerXPBar" class="pip-progress-fill" style="width: 30%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- SCROLLABLE MAIN VIEWPORT -->
+            <main id="mainScrollArea" class="flex-1 overflow-y-auto px-3.5 py-3 space-y-3 z-10">
+
+                <!-- ==========================================
+                     TAB 1: ПРЕДМЕТЫ / НАВЫКИ (SKILLS - DEFAULT MOBILE HOME)
+                     ========================================== -->
+                <section id="view-skills" class="space-y-3 pb-4">
+                    <!-- Quick Filter / Add Subject Row -->
+                    <div class="flex items-center justify-between gap-2">
+                        <div>
+                            <h1 class="text-sm font-extrabold uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-graduation-cap"></i> Дисциплины и Навыки
+                            </h1>
+                            <p class="text-[11px] opacity-75">Нажимайте +1 для мгновенного начисления опыта</p>
+                        </div>
+                        <button onclick="openSheet('addSkillSheet')" class="pip-btn pip-btn-solid px-3 py-2 rounded-xl text-xs shrink-0">
+                            <i class="fa-solid fa-plus"></i> Предмет
+                        </button>
+                    </div>
+
+                    <!-- Horizontal Subject Pills for fast switching -->
+                    <div id="subjectPillsBar" class="flex items-center gap-1.5 overflow-x-auto pb-1">
+                        <!-- Rendered via JS -->
+                    </div>
+
+                    <!-- Active Subject Card with Tactile Criteria Controls -->
+                    <div id="activeSubjectContainer" class="space-y-3">
+                        <!-- Rendered via JS -->
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 2: ПРОФИЛЬ / СТАТ (CHARACTER STATS & S.P.E.C.I.A.L.)
+                     ========================================== -->
+                <section id="view-stat" class="hidden space-y-3.5 pb-4">
+                    <!-- Student Vault ID Card -->
+                    <div class="pip-card rounded-2xl p-3.5">
+                        <div class="flex items-center gap-3.5">
+                            <!-- Vault Student SVG Avatar -->
+                            <div class="w-20 h-20 rounded-2xl pip-border flex items-center justify-center p-2 bg-black/50 shrink-0">
+                                <svg viewBox="0 0 100 100" class="w-full h-full fill-current">
+                                    <polygon points="50,10 10,27 50,43 90,27" />
+                                    <rect x="83" y="27" width="3" height="18" />
+                                    <circle cx="84.5" cy="47" r="3.5" />
+                                    <circle cx="50" cy="54" r="18" fill="none" stroke="currentColor" stroke-width="4" />
+                                    <circle cx="43" cy="50" r="2.5" />
+                                    <circle cx="57" cy="50" r="2.5" />
+                                    <path d="M 42 59 Q 50 66 58 59" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                                    <path d="M 22 92 C 22 74, 78 74, 78 92" fill="none" stroke="currentColor" stroke-width="4" />
+                                    <text x="50" y="89" text-anchor="middle" font-size="11" font-weight="bold">101</text>
+                                </svg>
+                            </div>
+
+                            <div class="flex-1 min-w-0">
+                                <div class="text-[10px] uppercase tracking-widest opacity-75">КАРТА УЧАЩЕГОСЯ VAULT-TEC</div>
+                                <div class="text-base font-extrabold truncate" id="statCardName">Студент-Выживший</div>
+                                <div class="text-xs font-bold opacity-90 mb-2" id="statCardRank">Первокурсник-Выживший</div>
+
+                                <div class="grid grid-cols-3 gap-1.5 text-center text-[11px]">
+                                    <div class="pip-box-subtle rounded-lg p-1.5">
+                                        <div class="opacity-70 text-[9px]">ВСЕГО XP</div>
+                                        <div class="font-extrabold text-xs" id="statTotalXP">0</div>
+                                    </div>
+                                    <div class="pip-box-subtle rounded-lg p-1.5">
+                                        <div class="opacity-70 text-[9px]">ДЕЙСТВИЙ</div>
+                                        <div class="font-extrabold text-xs" id="statActions">0</div>
+                                    </div>
+                                    <div class="pip-box-subtle rounded-lg p-1.5">
+                                        <div class="opacity-70 text-[9px]">СТРИК</div>
+                                        <div class="font-extrabold text-xs" id="statStreak">1 дн.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- S.P.E.C.I.A.L. -> У.Ч.Е.Б.А. -->
+                    <div class="pip-card rounded-2xl p-3.5">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xs font-extrabold uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-microchip"></i> Характеристики «У.Ч.Е.Б.А.»
+                            </h2>
+                            <span class="text-[10px] opacity-75">Шкала 1–10</span>
+                        </div>
+                        <div id="specialMobileList" class="space-y-2">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Subject Mastery Summary -->
+                    <div class="pip-card rounded-2xl p-3.5">
+                        <h2 class="text-xs font-extrabold uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                            <i class="fa-solid fa-bars-progress"></i> Уровни Владения Предметами
+                        </h2>
+                        <div id="statSubjectSummaryList" class="space-y-2.5">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity Terminal Feed -->
+                    <div class="pip-card rounded-2xl p-3.5">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-xs font-extrabold uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-terminal"></i> Журнал Активности
+                            </h2>
+                            <span class="text-[10px] opacity-70">Последние записи</span>
+                        </div>
+                        <div id="mobileActivityLog" class="space-y-1.5 max-h-48 overflow-y-auto text-[11px] font-mono pr-1">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 3: КВЕСТЫ / ЗАДАЧИ (STUDY MISSIONS)
+                     ========================================== -->
+                <section id="view-quests" class="hidden space-y-3 pb-4">
+                    <div class="flex items-center justify-between gap-2">
+                        <div>
+                            <h1 class="text-sm font-extrabold uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-list-check"></i> Учебные Квесты
+                            </h1>
+                            <p class="text-[11px] opacity-75" id="questsSubHeader">Активные задачи на день и неделю</p>
+                        </div>
+                        <button onclick="openSheet('addQuestSheet')" class="pip-btn pip-btn-solid px-3 py-2 rounded-xl text-xs shrink-0">
+                            <i class="fa-solid fa-plus"></i> Задача
+                        </button>
+                    </div>
+
+                    <div id="mobileQuestsList" class="space-y-2.5">
+                        <!-- Populated by JS -->
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 4: ПЕРКИ И ОПЦИИ (PERKS & SETTINGS)
+                     ========================================== -->
+                <section id="view-perks" class="hidden space-y-4 pb-4">
+                    <!-- Perks Grid -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-sm font-extrabold uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-medal"></i> Перки и Достижения
+                            </h2>
+                            <span id="perksCounterBadge" class="text-xs font-extrabold px-2 py-0.5 rounded border border-current">0 / 8</span>
+                        </div>
+                        <div id="mobilePerksGrid" class="grid grid-cols-1 gap-2.5">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Terminal Settings & PWA Options -->
+                    <div class="pip-card rounded-2xl p-3.5 space-y-3">
+                        <h2 class="text-xs font-extrabold uppercase tracking-wider flex items-center gap-1.5 border-b border-[var(--pip-primary-dim)] pb-2">
+                            <i class="fa-solid fa-sliders"></i> Настройки Карманного Терминала
+                        </h2>
+
+                        <!-- Color Theme Selector -->
+                        <div>
+                            <div class="text-[11px] font-bold uppercase mb-1.5 opacity-85">Цветовая схема экрана:</div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="setTheme('green')" class="pip-btn py-2 px-2.5 rounded-xl text-xs justify-start">
+                                    <span class="w-3.5 h-3.5 rounded-full bg-[#22ff66] inline-block shrink-0"></span>
+                                    <span>Pip-Boy Зеленый</span>
+                                </button>
+                                <button onclick="setTheme('amber')" class="pip-btn py-2 px-2.5 rounded-xl text-xs justify-start">
+                                    <span class="w-3.5 h-3.5 rounded-full bg-[#ffb642] inline-block shrink-0"></span>
+                                    <span>New Vegas Янтарь</span>
+                                </button>
+                                <button onclick="setTheme('blue')" class="pip-btn py-2 px-2.5 rounded-xl text-xs justify-start">
+                                    <span class="w-3.5 h-3.5 rounded-full bg-[#38e0ff] inline-block shrink-0"></span>
+                                    <span>Vault-Tec Синий</span>
+                                </button>
+                                <button onclick="setTheme('crimson')" class="pip-btn py-2 px-2.5 rounded-xl text-xs justify-start">
+                                    <span class="w-3.5 h-3.5 rounded-full bg-[#ff4d6d] inline-block shrink-0"></span>
+                                    <span>Аварийный Алый</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Toggles Row -->
+                        <div class="grid grid-cols-2 gap-2 pt-1">
+                            <button onclick="toggleCRT()" id="settingsCrtBtn" class="pip-btn py-2.5 px-3 rounded-xl text-xs">
+                                <i class="fa-solid fa-tv"></i> ЭЛТ-Фильтр
+                            </button>
+                            <button onclick="toggleSound()" id="settingsSoundBtn" class="pip-btn py-2.5 px-3 rounded-xl text-xs">
+                                <i class="fa-solid fa-volume-high"></i> Звук и Вибро
+                            </button>
+                        </div>
+
+                        <!-- Backup Export / Import -->
+                        <div class="pt-1 border-t border-[var(--pip-primary-dim)]">
+                            <div class="text-[11px] font-bold uppercase mb-1.5 opacity-85">Резервная копия прогресса:</div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="exportBackupJSON()" class="pip-btn py-2 px-3 rounded-xl text-xs">
+                                    <i class="fa-solid fa-download"></i> Скачать JSON
+                                </button>
+                                <label class="pip-btn py-2 px-3 rounded-xl text-xs cursor-pointer text-center">
+                                    <i class="fa-solid fa-upload"></i> Загрузить JSON
+                                    <input type="file" accept=".json" onchange="importBackupJSON(event)" class="hidden">
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Install on Phone Hint & Reset -->
+                        <div class="pt-1 border-t border-[var(--pip-primary-dim)] flex items-center justify-between gap-2">
+                            <button onclick="openSheet('pwaHelpSheet')" class="pip-btn flex-1 py-2 px-3 rounded-xl text-xs">
+                                <i class="fa-solid fa-mobile-screen"></i> Как добавить на экран телефона
+                            </button>
+                            <button onclick="openSheet('resetSheet')" class="pip-btn py-2 px-3 rounded-xl text-xs text-[var(--pip-danger)] border-[var(--pip-danger)]" title="Сброс данных">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+
+            <!-- BOTTOM NAVIGATION BAR (THUMB-FRIENDLY) -->
+            <nav class="shrink-0 border-t-2 border-[var(--pip-primary)] bg-black/90 grid grid-cols-4 z-30 pb-[env(safe-area-inset-bottom)]">
+                <button onclick="switchMobileTab('skills')" id="navBtn-skills" class="nav-tab-btn active py-2.5 px-1 flex flex-col items-center justify-center gap-1">
+                    <div class="relative">
+                        <i class="fa-solid fa-book-skull text-lg"></i>
+                        <span id="badgeSkills" class="absolute -top-1.5 -right-3 text-[9px] font-extrabold px-1 rounded bg-[var(--pip-primary)] text-[var(--pip-bg)]">4</span>
+                    </div>
+                    <span class="text-[10px] font-extrabold uppercase tracking-wider">Предметы</span>
+                </button>
+
+                <button onclick="switchMobileTab('stat')" id="navBtn-stat" class="nav-tab-btn py-2.5 px-1 flex flex-col items-center justify-center gap-1">
+                    <i class="fa-solid fa-user-astronaut text-lg"></i>
+                    <span class="text-[10px] font-extrabold uppercase tracking-wider">Профиль</span>
+                </button>
+
+                <button onclick="switchMobileTab('quests')" id="navBtn-quests" class="nav-tab-btn py-2.5 px-1 flex flex-col items-center justify-center gap-1">
+                    <div class="relative">
+                        <i class="fa-solid fa-list-check text-lg"></i>
+                        <span id="badgeQuests" class=" -top-1.5 -right-3 text-[9px] font-extrabold px-1 rounded bg-[var(--pip-primary)] text-[var(--pip-bg)]">2</span>
+                    </div>
+                    <span class="text-[10px] font-extrabold uppercase tracking-wider">Квесты</span>
+                </button>
+
+                <button onclick="switchMobileTab('perks')" id="navBtn-perks" class="nav-tab-btn py-2.5 px-1 flex flex-col items-center justify-center gap-1">
+                    <div class="relative">
+                        <i class="fa-solid fa-medal text-lg"></i>
+                        <span id="badgePerks" class="absolute -top-1.5 -right-3.5 text-[9px] font-extrabold px-1 rounded bg-[var(--pip-primary)] text-[var(--pip-bg)]">1/8</span>
+                    </div>
+                    <span class="text-[10px] font-extrabold uppercase tracking-wider">Перки</span>
+                </button>
+            </nav>
+
+            <!-- ==========================================
+                 MOBILE BOTTOM SHEETS (SLIDE-UP MODALS)
+                 ========================================== -->
+
+            <!-- Bottom Sheet 1: Add New Subject -->
+            <div id="addSkillSheet" class="bottom-sheet-backdrop" onclick="backdropClick(event, 'addSkillSheet')">
+                <div class="bottom-sheet-panel p-4">
+                    <div class="w-10 h-1 bg-[var(--pip-primary)] opacity-50 rounded-full mx-auto mb-3"></div>
+                    <div class="flex items-center justify-between mb-3 pb-2 border-b border-[var(--pip-primary-dim)]">
+                        <h3 class="text-sm font-extrabold uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-folder-plus"></i> Новый Предмет / Навык
+                        </h3>
+                        <button onclick="closeSheet('addSkillSheet')" class="p-1 text-base"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <form onsubmit="handleAddSkill(event)" class="space-y-3 overflow-y-auto pr-1">
+                        <div>
+                            <label class="block text-[11px] uppercase font-bold mb-1">Название дисциплины</label>
+                            <input type="text" id="newSkillName" required placeholder="Напр.: Физика, Дискретная математика" class="pip-input">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[11px] uppercase font-bold mb-1">Категория</label>
+                                <select id="newSkillCategory" class="pip-input">
+                                    <option value="Точные науки">Точные науки</option>
+                                    <option value="IT и Код">IT и Код</option>
+                                    <option value="Естественные">Естественные</option>
+                                    <option value="Языки">Языки</option>
+                                    <option value="Развитие">Саморазвитие</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] uppercase font-bold mb-1">Иконка</label>
+                                <select id="newSkillIcon" class="pip-input">
+                                    <option value="fa-square-root-variable">∑ Математика</option>
+                                    <option value="fa-laptop-code">💻 Код / IT</option>
+                                    <option value="fa-atom">⚛️ Физика / Наука</option>
+                                    <option value="fa-language">🌐 Языки</option>
+                                    <option value="fa-book-open">📖 Гуманитарные</option>
+                                    <option value="fa-brain">🧠 Логика / Память</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] uppercase font-bold mb-1">Краткая цель</label>
+                            <input type="text" id="newSkillDesc" placeholder="Напр.: Закрыть сессию на автомат" class="pip-input">
+                        </div>
+
+                        <div class="pip-box-subtle p-2.5 rounded-xl space-y-1.5">
+                            <div class="text-[11px] font-bold uppercase">Набор критериев по умолчанию:</div>
+                            <label class="flex items-center gap-2 text-xs cursor-pointer">
+                                <input type="radio" name="skillTemplate" value="university" checked class="accent-[var(--pip-primary)]">
+                                <span>Университетский (Практика + Теория + Выученные темы)</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-xs cursor-pointer">
+                                <input type="radio" name="skillTemplate" value="custom" class="accent-[var(--pip-primary)]">
+                                <span>Минимальный (добавлю свои критерии сам)</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="pip-btn pip-btn-solid w-full py-3 rounded-xl text-xs uppercase tracking-wider">
+                            <i class="fa-solid fa-check"></i> Создать предмет
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Bottom Sheet 2: Add Criterion / Topic inside Active Subject -->
+            <div id="addCriterionSheet" class="bottom-sheet-backdrop" onclick="backdropClick(event, 'addCriterionSheet')">
+                <div class="bottom-sheet-panel p-4">
+                    <div class="w-10 h-1 bg-[var(--pip-primary)] opacity-50 rounded-full mx-auto mb-3"></div>
+                    <div class="flex items-center justify-between mb-3 pb-2 border-b border-[var(--pip-primary-dim)]">
+                        <h3 class="text-sm font-extrabold uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-layer-group"></i> Добавить Критерий / Тему
+                        </h3>
+                        <button onclick="closeSheet('addCriterionSheet')" class="p-1 text-base"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <form onsubmit="handleAddCriterion(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-[11px] uppercase font-bold mb-1">Название критерия или раздела</label>
+                            <input type="text" id="newCritName" required placeholder="Напр.: Лабораторные работы / Доказательства" class="pip-input">
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] uppercase font-bold mb-1">Тип нагрузки (прокачивает У.Ч.Е.Б.А.)</label>
+                            <select id="newCritType" class="pip-input">
+                                <option value="practice">Практика / Задачи (Упорство)</option>
+                                <option value="theory">Чтение теории / Конспекты (Чтение)</option>
+                                <option value="memory">Выученные наизусть билеты (Память)</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[11px] uppercase font-bold mb-1">Ед. измерения</label>
+                                <input type="text" id="newCritUnit" required value="задач" class="pip-input">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] uppercase font-bold mb-1">XP за +1 выполнение</label>
+                                <input type="number" id="newCritXp" required min="5" max="200" step="5" value="20" class="pip-input">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="pip-btn pip-btn-solid w-full py-3 rounded-xl text-xs uppercase tracking-wider">
+                            <i class="fa-solid fa-plus"></i> Добавить критерий
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Bottom Sheet 3: Add Quest -->
+            <div id="addQuestSheet" class="bottom-sheet-backdrop" onclick="backdropClick(event, 'addQuestSheet')">
+                <div class="bottom-sheet-panel p-4">
+                    <div class="w-10 h-1 bg-[var(--pip-primary)] opacity-50 rounded-full mx-auto mb-3"></div>
+                    <div class="flex items-center justify-between mb-3 pb-2 border-b border-[var(--pip-primary-dim)]">
+                        <h3 class="text-sm font-extrabold uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-scroll"></i> Новая Учебная Задача
+                        </h3>
+                        <button onclick="closeSheet('addQuestSheet')" class="p-1 text-base"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <form onsubmit="handleCreateQuest(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-[11px] uppercase font-bold mb-1">Что нужно сделать?</label>
+                            <input type="text" id="questTitleInput" required placeholder="Напр.: Решить 10 интегралов из Демидовича" class="pip-input">
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] uppercase font-bold mb-1">Предмет</label>
+                            <select id="questSkillSelect" onchange="updateQuestCriterionDropdown()" class="pip-input"></select>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] uppercase font-bold mb-1">Критерий внутри предмета</label>
+                            <select id="questCriterionSelect" class="pip-input"></select>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] uppercase font-bold mb-1">Награда за выполнение</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="questXp" value="25" class="sr-only peer" checked>
+                                    <div class="pip-box-subtle peer-checked:bg-[var(--pip-primary)] peer-checked:text-[var(--pip-bg)] text-center py-2 rounded-xl text-xs font-extrabold">
+                                        Обычная<br>+25 XP
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="questXp" value="50" class="sr-only peer">
+                                    <div class="pip-box-subtle peer-checked:bg-[var(--pip-primary)] peer-checked:text-[var(--pip-bg)] text-center py-2 rounded-xl text-xs font-extrabold">
+                                        Важная<br>+50 XP
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="questXp" value="100" class="sr-only peer">
+                                    <div class="pip-box-subtle peer-checked:bg-[var(--pip-primary)] peer-checked:text-[var(--pip-bg)] text-center py-2 rounded-xl text-xs font-extrabold">
+                                        Босс / Экзамен<br>+100 XP
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="pip-btn pip-btn-solid w-full py-3 rounded-xl text-xs uppercase tracking-wider">
+                            <i class="fa-solid fa-plus-circle"></i> Добавить в список квестов
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Bottom Sheet 4: Edit Student Profile -->
+            <div id="profileSheet" class="bottom-sheet-backdrop" onclick="backdropClick(event, 'profileSheet')">
+                <div class="bottom-sheet-panel p-4">
+                    <div class="w-10 h-1 bg-[var(--pip-primary)] opacity-50 rounded-full mx-auto mb-3"></div>
+                    <div class="flex items-center justify-between mb-3 pb-2 border-b border-[var(--pip-primary-dim)]">
+                        <h3 class="text-sm font-extrabold uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-id-card"></i> Имя Студента
+                        </h3>
+                        <button onclick="closeSheet('profileSheet')" class="p-1 text-base"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <form onsubmit="handleSaveProfile(event)" class="space-y-3">
+                        <input type="text" id="editStudentNameInput" required maxlength="28" class="pip-input" placeholder="Введите имя или позывной">
+                        <button type="submit" class="pip-btn pip-btn-solid w-full py-3 rounded-xl text-xs uppercase">Сохранить</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Bottom Sheet 5: PWA Install Guide -->
+            <div id="pwaHelpSheet" class="bottom-sheet-backdrop" onclick="backdropClick(event, 'pwaHelpSheet')">
+                <div class="bottom-sheet-panel p-4 space-y-3">
+                    <div class="w-10 h-1 bg-[var(--pip-primary)] opacity-50 rounded-full mx-auto mb-1"></div>
+                    <div class="flex items-center justify-between pb-2 border-b border-[var(--pip-primary-dim)]">
+                        <h3 class="text-sm font-extrabold uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-mobile-screen-button"></i> Установка на смартфон
+                        </h3>
+                        <button onclick="closeSheet('pwaHelpSheet')" class="p-1 text-base"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="space-y-2.5 text-xs leading-relaxed opacity-90">
+                        <div class="pip-box-subtle p-3 rounded-xl">
+                            <strong><i class="fa-brands fa-apple mr-1"></i> На iPhone (Safari):</strong><br>
+                            Нажмите кнопку <strong>«Поделиться»</strong> внизу браузера и выберите пункт <strong>«На экран „Домой“»</strong>. Приложение откроется во весь экран как нативное!
+                        </div>
+                        <div class="pip-box-subtle p-3 rounded-xl">
+                            <strong><i class="fa-brands fa-android mr-1"></i> На Android (Chrome):</strong><br>
+                            Нажмите на меню <strong>«⋮»</strong> в правом верхнем углу и выберите <strong>«Добавить на главный экран»</strong> или <strong>«Установить приложение»</strong>.
+                        </div>
+                    </div>
+                    <button onclick="closeSheet('pwaHelpSheet')" class="pip-btn pip-btn-solid w-full py-2.5 rounded-xl text-xs">Понятно</button>
+                </div>
+            </div>
+
+            <!-- Bottom Sheet 6: Reset Confirmation -->
+            <div id="resetSheet" class="bottom-sheet-backdrop" onclick="backdropClick(event, 'resetSheet')">
+                <div class="bottom-sheet-panel p-4 space-y-3">
+                    <div class="w-10 h-1 bg-[var(--pip-primary)] opacity-50 rounded-full mx-auto mb-1"></div>
+                    <h3 class="text-sm font-extrabold uppercase flex items-center gap-2 text-[var(--pip-danger)]">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Сброс памяти терминала
+                    </h3>
+                    <p class="text-xs opacity-85">
+                        Сбросить текущий прогресс и восстановить стандартные предметы (Матанализ, Программирование, Линейная алгебра, Английский)?
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 pt-1">
+                        <button onclick="closeSheet('resetSheet')" class="pip-btn py-2.5 rounded-xl text-xs">Отмена</button>
+                        <button onclick="confirmResetData()" class="pip-btn pip-btn-solid py-2.5 rounded-xl text-xs">Сбросить</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Sheet 7: LEVEL UP CELEBRATION -->
+            <div id="levelUpSheet" class="bottom-sheet-backdrop" onclick="backdropClick(event, 'levelUpSheet')">
+                <div class="bottom-sheet-panel p-5 text-center items-center">
+                    <div class="w-14 h-14 rounded-2xl pip-border flex items-center justify-center text-3xl mb-2">
+                        <i class="fa-solid fa-star fa-bounce"></i>
+                    </div>
+                    <div class="text-[10px] uppercase tracking-widest opacity-75">СИСТЕМНОЕ СООБЩЕНИЕ VAULT-TEC</div>
+                    <h2 class="text-2xl font-extrabold uppercase tracking-wider my-1">LEVEL UP!</h2>
+                    <p id="levelUpSheetDesc" class="text-xs opacity-90 mb-3 max-w-xs">
+                        Вы достигли нового уровня знаний!
+                    </p>
+                    <div id="levelUpSheetBadge" class="px-4 py-1.5 rounded-xl pip-border text-xs font-extrabold mb-4">
+                        Уровень повышен
+                    </div>
+                    <button onclick="closeSheet('levelUpSheet')" class="pip-btn pip-btn-solid w-full py-3 rounded-xl text-xs uppercase">
+                        Отлично! Продолжить прокачку
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ==========================================
+         MOBILE APPLICATION LOGIC
+         ========================================== -->
+    <script>
+        const STORAGE_KEY = 'pip_study_3000_mobile_v2';
+
+        const CHARACTER_RANKS = [
+            { minLevel: 1, title: 'Абитуриент Убежища' },
+            { minLevel: 2, title: 'Первокурсник-Выживший' },
+            { minLevel: 4, title: 'Искатель Знаний' },
+            { minLevel: 6, title: 'Покоритель Сессии' },
+            { minLevel: 9, title: 'Адепт Науки' },
+            { minLevel: 12, title: 'Магистр Пустоши' },
+            { minLevel: 16, title: 'Легенда Университета' }
+        ];
+
+        function getSkillRankTitle(level) {
+            if (level <= 1) return 'Новичок';
+            if (level <= 3) return 'Практикант';
+            if (level <= 5) return 'Знаток';
+            if (level <= 8) return 'Эксперт';
+            return 'Магистр';
+        }
+
+        const PERKS_CATALOG = [
+            {
+                id: 'first_step',
+                title: 'Первый шаг из Убежища',
+                desc: 'Выполните первое учебное действие в любом предмете.',
+                icon: 'fa-shoe-prints',
+                check: (s) => s.totalActions >= 1
+            },
+            {
+                id: 'math_apprentice',
+                title: 'Укротитель Интегралов',
+                desc: 'Достигните 3-го уровня в любом изучаемом предмете.',
+                icon: 'fa-square-root-variable',
+                check: (s) => s.skills.some(sk => getSkillLevel(sk) >= 3)
+            },
+            {
+                id: 'practice_grinder',
+                title: 'Машина Практики',
+                desc: 'Наберите 150+ XP за критерии типа «Решение практики».',
+                icon: 'fa-gears',
+                check: (s) => getTotalXPByType(s, 'practice') >= 150
+            },
+            {
+                id: 'bookworm',
+                title: 'Хранитель Лекций',
+                desc: 'Наберите 120+ XP за критерии типа «Чтение теории».',
+                icon: 'fa-book-journal-whills',
+                check: (s) => getTotalXPByType(s, 'theory') >= 120
+            },
+            {
+                id: 'eidetic_memory',
+                title: 'Эйдетическая Память',
+                desc: 'Наберите 150+ XP за «Выученные наизусть темы / билеты».',
+                icon: 'fa-brain',
+                check: (s) => getTotalXPByType(s, 'memory') >= 150
+            },
+            {
+                id: 'quest_hunter',
+                title: 'Выполненный Контракт',
+                desc: 'Завершите минимум 2 учебных квеста во вкладке «Квесты».',
+                icon: 'fa-clipboard-check',
+                check: (s) => s.quests.filter(q => q.completed).length >= 2
+            },
+            {
+                id: 'polymath',
+                title: 'Полимат',
+                desc: 'Прокачайте минимум 4 предмета выше 60 XP каждый.',
+                icon: 'fa-atom',
+                check: (s) => s.skills.length >= 4 && s.skills.every(sk => getSkillTotalXP(sk) >= 60)
+            },
+            {
+                id: 'session_boss',
+                title: 'Гроза Сессии',
+                desc: 'Достигните 5-го общего уровня персонажа.',
+                icon: 'fa-crown',
+                check: (s) => getCharacterLevelInfo(s).level >= 5
+            }
+        ];
+
+        function getDefaultState() {
+            const today = new Date().toISOString().slice(0, 10);
+            return {
+                studentName: 'Студент-Выживший',
+                theme: 'green',
+                crtEnabled: true,
+                soundEnabled: true,
+                selectedSkillId: 'math_analysis',
+                totalActions: 8,
+                bonusQuestXP: 0,
+                streakDays: 3,
+                lastStudyDate: today,
+                skills: [
+                    {
+                        id: 'math_analysis',
+                        name: 'Математический анализ',
+                        category: 'Точные науки',
+                        icon: 'fa-square-root-variable',
+                        description: 'Пределы, производные, интегралы, ряды и доказательства теорем.',
+                        criteria: [
+                            { id: 'ma_practice', name: 'Решение практики (задачи)', type: 'practice', unit: 'задач', count: 6, xpPerUnit: 15, totalXp: 90 },
+                            { id: 'ma_theory', name: 'Чтение теории и лекций', type: 'theory', unit: 'лекций', count: 3, xpPerUnit: 20, totalXp: 60 },
+                            { id: 'ma_memory', name: 'Выученные наизусть билеты/темы', type: 'memory', unit: 'тем', count: 2, xpPerUnit: 40, totalXp: 80 }
+                        ]
+                    },
+                    {
+                        id: 'cs_prog',
+                        name: 'Программирование (JS/Python)',
+                        category: 'IT и Код',
+                        icon: 'fa-laptop-code',
+                        description: 'Алгоритмы, лабораторные работы, структуры данных и практика кода.',
+                        criteria: [
+                            { id: 'cs_practice', name: 'Решение практики (код)', type: 'practice', unit: 'задач', count: 4, xpPerUnit: 20, totalXp: 80 },
+                            { id: 'cs_theory', name: 'Чтение документации/теории', type: 'theory', unit: 'глав', count: 2, xpPerUnit: 15, totalXp: 30 },
+                            { id: 'cs_memory', name: 'Выученные алгоритмы', type: 'memory', unit: 'тем', count: 1, xpPerUnit: 35, totalXp: 35 }
+                        ]
+                    },
+                    {
+                        id: 'linear_algebra',
+                        name: 'Линейная алгебра',
+                        category: 'Точные науки',
+                        icon: 'fa-border-all',
+                        description: 'Матрицы, определители, СЛАУ и векторные пространства.',
+                        criteria: [
+                            { id: 'la_practice', name: 'Решение практики (матрицы)', type: 'practice', unit: 'задач', count: 3, xpPerUnit: 15, totalXp: 45 },
+                            { id: 'la_theory', name: 'Чтение теории', type: 'theory', unit: 'лекций', count: 2, xpPerUnit: 20, totalXp: 40 },
+                            { id: 'la_memory', name: 'Выученные определения', type: 'memory', unit: 'билетов', count: 1, xpPerUnit: 35, totalXp: 35 }
+                        ]
+                    },
+                    {
+                        id: 'english_lang',
+                        name: 'Английский язык',
+                        category: 'Языки',
+                        icon: 'fa-language',
+                        description: 'Грамматика, чтение технической литературы и словарный запас.',
+                        criteria: [
+                            { id: 'en_practice', name: 'Практика и упражнения', type: 'practice', unit: 'упр.', count: 2, xpPerUnit: 15, totalXp: 30 },
+                            { id: 'en_theory', name: 'Чтение статей и правил', type: 'theory', unit: 'статей', count: 2, xpPerUnit: 15, totalXp: 30 },
+                            { id: 'en_memory', name: 'Выученные слова наизусть', type: 'memory', unit: 'наборов', count: 2, xpPerUnit: 25, totalXp: 50 }
+                        ]
+                    }
+                ],
+                quests: [
+                    { id: 'q1', title: 'Решить 5 задач по производным и пределам', skillId: 'math_analysis', criterionId: 'ma_practice', xpReward: 50, completed: false },
+                    { id: 'q2', title: 'Выучить наизусть доказательство теоремы Лагранжа', skillId: 'math_analysis', criterionId: 'ma_memory', xpReward: 50, completed: false },
+                    { id: 'q3', title: 'Сдать лабораторную работу по циклам', skillId: 'cs_prog', criterionId: 'cs_practice', xpReward: 100, completed: true }
+                ],
+                activityLog: [
+                    { time: '19:40', text: 'Матанализ: Выученные темы (+40 XP)' },
+                    { time: '18:15', text: 'Матанализ: Решение практики (+15 XP)' },
+                    { time: '16:05', text: 'Программирование: Практика (+20 XP)' }
+                ]
+            };
+        }
+
+        let appState = loadState();
+        let activeTab = 'skills';
+        let toastTimer = null;
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return getDefaultState();
+                return { ...getDefaultState(), ...JSON.parse(raw) };
+            } catch (e) {
+                return getDefaultState();
+            }
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Haptic + Sound Feedback
+        let audioCtx = null;
+        function triggerFeedback(type = 'click') {
+            // Haptic vibration on supported mobile browsers
+            if (appState.soundEnabled && navigator.vibrate) {
+                if (type === 'click') navigator.vibrate(12);
+                else if (type === 'xp') navigator.vibrate([18, 30, 25]);
+                else if (type === 'levelup') navigator.vibrate([40, 50, 40, 50, 80]);
+            }
+
+            if (!appState.soundEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const now = audioCtx.currentTime;
+
+                if (type === 'click') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(920, now);
+                    osc.frequency.exponentialRampToValueAtTime(420, now + 0.04);
+                    gain.gain.setValueAtTime(0.04, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.045);
+                } else if (type === 'xp') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(540, now);
+                    osc.frequency.setValueAtTime(810, now + 0.055);
+                    gain.gain.setValueAtTime(0.07, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.16);
+                } else if (type === 'levelup') {
+                    [440, 554.37, 659.25, 880].forEach((freq, i) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'square';
+                        osc.frequency.setValueAtTime(freq, now + i * 0.08);
+                        gain.gain.setValueAtTime(0.06, now + i * 0.08);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.16);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + i * 0.08);
+                        osc.stop(now + i * 0.08 + 0.17);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        // Level & XP Math
+        function getCriterionInfo(c) {
+            const level = Math.floor(c.totalXp / 100) + 1;
+            const currentLevelXp = c.totalXp % 100;
+            return { level, currentLevelXp, progressPct: currentLevelXp };
+        }
+
+        function getSkillTotalXP(skill) {
+            return skill.criteria.reduce((sum, c) => sum + c.totalXp, 0);
+        }
+
+        function getSkillLevel(skill) {
+            return Math.floor(getSkillTotalXP(skill) / 100) + 1;
+        }
+
+        function getSkillLevelInfo(skill) {
+            const totalXp = getSkillTotalXP(skill);
+            const level = Math.floor(totalXp / 100) + 1;
+            const currentLevelXp = totalXp % 100;
+            return {
+                level,
+                totalXp,
+                currentLevelXp,
+                progressPct: currentLevelXp,
+                rank: getSkillRankTitle(level)
+            };
+        }
+
+        function getCharacterLevelInfo(state) {
+            const skillsXp = state.skills.reduce((sum, s) => sum + getSkillTotalXP(s), 0);
+            const totalXp = skillsXp + (state.bonusQuestXP || 0);
+            const xpPerLevel = 200;
+            const level = Math.floor(totalXp / xpPerLevel) + 1;
+            const currentLevelXp = totalXp % xpPerLevel;
+            const progressPct = Math.min(100, Math.round((currentLevelXp / xpPerLevel) * 100));
+
+            let rankTitle = CHARACTER_RANKS[0].title;
+            for (const r of CHARACTER_RANKS) {
+                if (level >= r.minLevel) rankTitle = r.title;
+            }
+            return { level, totalXp, currentLevelXp, xpPerLevel, progressPct, rankTitle };
+        }
+
+        function getTotalXPByType(state, type) {
+            let sum = 0;
+            state.skills.forEach(s => s.criteria.forEach(c => {
+                if (c.type === type) sum += c.totalXp;
+            }));
+            return sum;
+        }
+
+        // Update Streak when user studies
+        function updateStreakOnAction() {
+            const today = new Date().toISOString().slice(0, 10);
+            if (appState.lastStudyDate !== today) {
+                appState.streakDays = (appState.streakDays || 1) + 1;
+                appState.lastStudyDate = today;
+            }
+        }
+
+        // Core Action: Modify Criterion (+1 or -1 or custom)
+        function modifyCriterionXP(skillId, criterionId, unitDelta, customXp = null, customLabel = null, event = null) {
+            const skill = appState.skills.find(s => s.id === skillId);
+            if (!skill) return;
+            const crit = skill.criteria.find(c => c.id === criterionId);
+            if (!crit) return;
+
+            if (unitDelta < 0 && crit.count <= 0) return;
+
+            const prevCharLvl = getCharacterLevelInfo(appState).level;
+            const prevSkillLvl = getSkillLevelInfo(skill).level;
+
+            const xpDelta = customXp !== null ? Number(customXp) : (crit.xpPerUnit * unitDelta);
+            crit.count = Math.max(0, crit.count + unitDelta);
+            crit.totalXp = Math.max(0, crit.totalXp + xpDelta);
+
+            if (unitDelta > 0) {
+                appState.totalActions = (appState.totalActions || 0) + 1;
+                updateStreakOnAction();
+
+                const nowStr = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                const logMsg = customLabel
+                    ? `${skill.name}: ${customLabel} (+${xpDelta} XP)`
+                    : `${skill.name}: ${crit.name} (+${xpDelta} XP)`;
+                appState.activityLog.unshift({ time: nowStr, text: logMsg });
+                if (appState.activityLog.length > 25) appState.activityLog.pop();
+            }
+
+            const newCharLvl = getCharacterLevelInfo(appState).level;
+            const newSkillLvl = getSkillLevelInfo(skill).level;
+
+            saveState();
+            renderAll();
+
+            if (unitDelta > 0) {
+                if (event && event.clientX) {
+                    spawnFloatingXP(event.clientX, event.clientY, `+${xpDelta} XP`);
+                }
+                showToast(`${skill.name} • ${crit.name}`, `+${xpDelta} XP`);
+
+                if (newCharLvl > prevCharLvl) {
+                    triggerFeedback('levelup');
+                    const cInfo = getCharacterLevelInfo(appState);
+                    openLevelUpSheet(`Ваш общий уровень персонажа вырос до Уровня ${newCharLvl}!`, cInfo.rankTitle);
+                } else if (newSkillLvl > prevSkillLvl) {
+                    triggerFeedback('levelup');
+                    const sInfo = getSkillLevelInfo(skill);
+                    openLevelUpSheet(`Предмет «${skill.name}» прокачан до Уровня ${newSkillLvl}!`, `Ранг: ${sInfo.rank}`);
+                } else {
+                    triggerFeedback('xp');
+                }
+            } else {
+                triggerFeedback('click');
+                showToast(`${crit.name}: скорректировано`, `${xpDelta} XP`);
+            }
+        }
+
+        function handleQuickNoteTask(event, skillId) {
+            event.preventDefault();
+            const input = document.getElementById('mobileQuickNoteInput');
+            const critSelect = document.getElementById('mobileQuickNoteCrit');
+            const xpSelect = document.getElementById('mobileQuickNoteXP');
+
+            const text = input.value.trim();
+            if (!text) return;
+
+            modifyCriterionXP(skillId, critSelect.value, 1, parseInt(xpSelect.value, 10), text);
+            input.value = '';
+        }
+
+        function showToast(text, badge) {
+            const toast = document.getElementById('pipToast');
+            document.getElementById('pipToastText').textContent = text;
+            document.getElementById('pipToastBadge').textContent = badge;
+            toast.classList.add('show');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 2100);
+        }
+
+        function spawnFloatingXP(x, y, text) {
+            const el = document.createElement('div');
+            el.className = 'floating-xp text-sm';
+            el.textContent = text;
+            el.style.left = `${Math.max(20, Math.min(window.innerWidth - 80, x - 25))}px`;
+            el.style.top = `${Math.max(20, y - 20)}px`;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 850);
+        }
+
+        function openLevelUpSheet(desc, badge) {
+            document.getElementById('levelUpSheetDesc').textContent = desc;
+            document.getElementById('levelUpSheetBadge').textContent = badge;
+            openSheet('levelUpSheet');
+        }
+
+        // ==========================================
+        // RENDER ALL MOBILE VIEWS
+        // ==========================================
+        function renderAll() {
+            applySettingsUI();
+            renderTopBar();
+            renderSkillsView();
+            renderStatView();
+            renderQuestsView();
+            renderPerksView();
+        }
+
+        function applySettingsUI() {
+            document.documentElement.setAttribute('data-theme', appState.theme || 'green');
+            const shell = document.getElementById('phoneShell');
+            if (appState.crtEnabled) {
+                shell.classList.remove('crt-off');
+            } else {
+                shell.classList.add('crt-off');
+            }
+
+            const soundIcon = document.getElementById('headerSoundIcon');
+            soundIcon.className = appState.soundEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark opacity-50';
+        }
+
+        function renderTopBar() {
+            const charInfo = getCharacterLevelInfo(appState);
+            document.getElementById('headerStudentName').textContent = appState.studentName;
+            document.getElementById('headerLevelNum').textContent = charInfo.level;
+            document.getElementById('headerCurrentXP').textContent = charInfo.currentLevelXp;
+            document.getElementById('headerMaxXP').textContent = charInfo.xpPerLevel;
+            document.getElementById('headerXPBar').style.width = `${charInfo.progressPct}%`;
+            document.getElementById('headerStreak').textContent = `${appState.streakDays || 1} дн.`;
+
+            // Bottom Nav Badges
+            document.getElementById('badgeSkills').textContent = appState.skills.length;
+            const openQuests = appState.quests.filter(q => !q.completed).length;
+            const qBadge = document.getElementById('badgeQuests');
+            qBadge.textContent = openQuests;
+            qBadge.style.display = openQuests > 0 ? 'inline-block' : 'none';
+
+            const unlockedPerks = PERKS_CATALOG.filter(p => p.check(appState)).length;
+            document.getElementById('badgePerks').textContent = `${unlockedPerks}/${PERKS_CATALOG.length}`;
+        }
+
+        function renderSkillsView() {
+            if (!appState.skills.some(s => s.id === appState.selectedSkillId) && appState.skills.length > 0) {
+                appState.selectedSkillId = appState.skills[0].id;
+            }
+
+            // Render Horizontal Subject Pills
+            const pillsBar = document.getElementById('subjectPillsBar');
+            pillsBar.innerHTML = appState.skills.map(skill => {
+                const isSelected = skill.id === appState.selectedSkillId;
+                const sInfo = getSkillLevelInfo(skill);
+                return `
+                    <button onclick="selectMobileSkill('${skill.id}')"
+                            class="px-3 py-2 rounded-xl text-xs font-extrabold shrink-0 flex items-center gap-2 transition ${isSelected ? 'pip-btn-solid' : 'pip-box-subtle opacity-80'}">
+                        <i class="fa-solid ${skill.icon || 'fa-book'}"></i>
+                        <span class="truncate max-w-[130px]">${escapeHtml(skill.name)}</span>
+                        <span class="text-[10px] px-1.5 py-0.2 rounded border border-current">Ур.${sInfo.level}</span>
+                    </button>
+                `;
+            }).join('');
+
+            const container = document.getElementById('activeSubjectContainer');
+            const skill = appState.skills.find(s => s.id === appState.selectedSkillId);
+            if (!skill) {
+                container.innerHTML = `<div class="pip-card rounded-2xl p-6 text-center text-xs opacity-75">Добавьте свой первый предмет кнопкой «+ Предмет» выше.</div>`;
+                return;
+            }
+
+            const sInfo = getSkillLevelInfo(skill);
+
+            const criteriaCards = skill.criteria.map(crit => {
+                const cInfo = getCriterionInfo(crit);
+                const typeIcon = crit.type === 'practice'
+                    ? 'fa-pen-ruler'
+                    : crit.type === 'theory'
+                        ? 'fa-book-open'
+                        : 'fa-brain';
+
+                return `
+                    <div class="pip-box-subtle rounded-2xl p-3 space-y-2">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="min-w-0">
+                                <div class="font-extrabold text-xs sm:text-sm flex items-center gap-1.5">
+                                    <i class="fa-solid ${typeIcon} opacity-80"></i>
+                                    <span class="truncate">${escapeHtml(crit.name)}</span>
+                                </div>
+                                <div class="text-[11px] opacity-80 mt-0.5">
+                                    Выполнено: <strong>${crit.count} ${escapeHtml(crit.unit)}</strong> • Ур. ${cInfo.level} (${crit.totalXp} XP)
+                                </div>
+                            </div>
+
+                            <!-- Thumb-Friendly -1 / +1 Buttons -->
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <button onclick="modifyCriterionXP('${skill.id}', '${crit.id}', -1, null, null, event)"
+                                        class="pip-btn w-9 h-10 rounded-xl text-xs opacity-75" title="Убрать 1">
+                                    -1
+                                </button>
+                                <button onclick="modifyCriterionXP('${skill.id}', '${crit.id}', 1, null, null, event)"
+                                        class="pip-btn pip-btn-solid px-3.5 h-10 rounded-xl text-xs">
+                                    +1 <span class="text-[10px] opacity-90">(+${crit.xpPerUnit} XP)</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Criterion Mini Bar -->
+                        <div class="flex items-center gap-2">
+                            <div class="pip-progress-track h-2 rounded flex-1">
+                                <div class="pip-progress-fill" style="width: ${cInfo.progressPct}%;"></div>
+                            </div>
+                            <span class="text-[10px] font-mono opacity-80 w-14 text-right">${cInfo.currentLevelXp}/100</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = `
+                <!-- Selected Subject Overview Card -->
+                <div class="pip-card rounded-2xl p-3.5 space-y-2.5">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-11 h-11 rounded-xl pip-border flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid ${skill.icon || 'fa-book'}"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="text-[10px] uppercase opacity-75">${escapeHtml(skill.category)} • ${sInfo.rank}</div>
+                                <h2 class="text-base font-extrabold truncate">${escapeHtml(skill.name)}</h2>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <span class="px-2.5 py-1 rounded-lg bg-[var(--pip-primary)] text-[var(--pip-bg)] font-extrabold text-xs">
+                                УР. ${sInfo.level}
+                            </span>
+                            ${appState.skills.length > 1 ? `
+                            <button onclick="deleteSkill('${skill.id}')" class="pip-btn w-8 h-8 rounded-lg text-xs opacity-65" title="Удалить предмет">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>` : ''}
+                        </div>
+                    </div>
+
+                    <p class="text-xs opacity-80 leading-snug">${escapeHtml(skill.description)}</p>
+
+                    <div>
+                        <div class="flex justify-between text-[11px] mb-1">
+                            <span>Прогресс предмета до Ур. ${sInfo.level + 1}</span>
+                            <span class="font-bold">${sInfo.currentLevelXp}/100 XP (Всего: ${sInfo.totalXp} XP)</span>
+                        </div>
+                        <div class="pip-progress-track h-3 rounded-md">
+                            <div class="pip-progress-fill" style="width: ${sInfo.progressPct}%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Criteria Header + Add Criterion Button -->
+                <div class="flex items-center justify-between pt-1">
+                    <h3 class="text-xs font-extrabold uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-sliders"></i> Критерии и Темы Предмета
+                    </h3>
+                    <button onclick="openSheet('addCriterionSheet')" class="pip-btn px-2.5 py-1.5 rounded-xl text-[11px]">
+                        <i class="fa-solid fa-plus"></i> Добавить критерий
+                    </button>
+                </div>
+
+                <!-- Criteria List -->
+                <div class="space-y-2.5">
+                    ${criteriaCards}
+                </div>
+
+                <!-- Quick Custom Study Log inside Subject -->
+                <form onsubmit="handleQuickNoteTask(event, '${skill.id}')" class="pip-card rounded-2xl p-3 space-y-2">
+                    <div class="text-[11px] font-extrabold uppercase flex items-center gap-1.5">
+                        <i class="fa-solid fa-bolt"></i> Записать конкретную изученную тему:
+                    </div>
+                    <input type="text" id="mobileQuickNoteInput" required placeholder="Напр.: Выучил таблицу производных" class="pip-input text-xs">
+                    <div class="grid grid-cols-12 gap-2">
+                        <select id="mobileQuickNoteCrit" class="pip-input text-xs col-span-6 py-2">
+                            ${skill.criteria.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('')}
+                        </select>
+                        <select id="mobileQuickNoteXP" class="pip-input text-xs col-span-3 py-2">
+                            <option value="15">+15 XP</option>
+                            <option value="30" selected>+30 XP</option>
+                            <option value="50">+50 XP</option>
+                        </select>
+                        <button type="submit" class="pip-btn pip-btn-solid rounded-xl text-xs col-span-3">
+                            Зачесть
+                        </button>
+                    </div>
+                </form>
+            `;
+        }
+
+        function renderStatView() {
+            const charInfo = getCharacterLevelInfo(appState);
+            document.getElementById('statCardName').textContent = appState.studentName;
+            document.getElementById('statCardRank').textContent = `Ур. ${charInfo.level} • ${charInfo.rankTitle}`;
+            document.getElementById('statTotalXP').textContent = charInfo.totalXp;
+            document.getElementById('statActions').textContent = appState.totalActions || 0;
+            document.getElementById('statStreak').textContent = `${appState.streakDays || 1} дн.`;
+
+            const practiceXP = getTotalXPByType(appState, 'practice');
+            const theoryXP = getTotalXPByType(appState, 'theory');
+            const memoryXP = getTotalXPByType(appState, 'memory');
+            const doneQuests = appState.quests.filter(q => q.completed).length;
+
+            const attrs = [
+                { letter: 'У', name: 'Упорство (Практика)', val: Math.min(10, 1 + Math.floor(practiceXP / 45)) },
+                { letter: 'Ч', name: 'Чтение (Теория и лекции)', val: Math.min(10, 1 + Math.floor(theoryXP / 40)) },
+                { letter: 'Е', name: 'Емкость памяти (Билеты)', val: Math.min(10, 1 + Math.floor(memoryXP / 45)) },
+                { letter: 'Б', name: 'Боеготовность (Квесты)', val: Math.min(10, 2 + doneQuests) },
+                { letter: 'А', name: 'Активность (Ранг и стрик)', val: Math.min(10, charInfo.level) }
+            ];
+
+            document.getElementById('specialMobileList').innerHTML = attrs.map(a => `
+                <div class="pip-box-subtle p-2 rounded-xl">
+                    <div class="flex justify-between text-xs font-bold mb-1">
+                        <span>
+                            <strong class="px-1.5 py-0.2 rounded bg-[var(--pip-primary)] text-[var(--pip-bg)] mr-1.5">${a.letter}</strong>${a.name}
+                        </span>
+                        <span>${a.val}/10</span>
+                    </div>
+                    <div class="pip-progress-track h-2 rounded">
+                        <div class="pip-progress-fill" style="width: ${a.val * 10}%;"></div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('statSubjectSummaryList').innerHTML = appState.skills.map(s => {
+                const info = getSkillLevelInfo(s);
+                return `
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="font-bold truncate"><i class="fa-solid ${s.icon} mr-1.5"></i>${escapeHtml(s.name)}</span>
+                            <span class="shrink-0">Ур. ${info.level} (${info.totalXp} XP)</span>
+                        </div>
+                        <div class="pip-progress-track h-2.5 rounded">
+                            <div class="pip-progress-fill" style="width: ${Math.min(100, Math.round((info.totalXp / 400) * 100))}%;"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const logEl = document.getElementById('mobileActivityLog');
+            if (!appState.activityLog || appState.activityLog.length === 0) {
+                logEl.innerHTML = `<div class="opacity-65">Пока нет записей.</div>`;
+            } else {
+                logEl.innerHTML = appState.activityLog.map(item => `
+                    <div class="py-1 border-b border-[var(--pip-primary-dim)] flex gap-2">
+                        <span class="opacity-60 shrink-0">[${escapeHtml(item.time)}]</span>
+                        <span>${escapeHtml(item.text)}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderQuestsView() {
+            const skillSelect = document.getElementById('questSkillSelect');
+            if (skillSelect) {
+                const cur = skillSelect.value || (appState.skills[0] && appState.skills[0].id);
+                skillSelect.innerHTML = appState.skills.map(s =>
+                    `<option value="${s.id}" ${s.id === cur ? 'selected' : ''}>${escapeHtml(s.name)}</option>`
+                ).join('');
+                updateQuestCriterionDropdown();
+            }
+
+            const activeCount = appState.quests.filter(q => !q.completed).length;
+            const doneCount = appState.quests.filter(q => q.completed).length;
+            document.getElementById('questsSubHeader').textContent = `Активно: ${activeCount} • Выполнено: ${doneCount}`;
+
+            const listEl = document.getElementById('mobileQuestsList');
+            if (appState.quests.length === 0) {
+                listEl.innerHTML = `<div class="pip-card rounded-2xl p-6 text-center text-xs opacity-75">Нет активных задач. Нажмите «+ Задача», чтобы запланировать учебу!</div>`;
+                return;
+            }
+
+            const sorted = [...appState.quests].sort((a, b) => Number(a.completed) - Number(b.completed));
+            listEl.innerHTML = sorted.map(q => {
+                const sk = appState.skills.find(s => s.id === q.skillId);
+                return `
+                    <div class="pip-card rounded-2xl p-3 flex items-center justify-between gap-3 ${q.completed ? 'opacity-55' : ''}">
+                        <div class="flex items-start gap-3 min-w-0 flex-1" onclick="toggleQuest('${q.id}', event)">
+                            <button class="w-8 h-8 rounded-xl pip-border flex items-center justify-center shrink-0 mt-0.5 ${q.completed ? 'bg-[var(--pip-primary)] text-[var(--pip-bg)]' : ''}">
+                                ${q.completed ? '<i class="fa-solid fa-check"></i>' : ''}
+                            </button>
+                            <div class="min-w-0">
+                                <div class="font-extrabold text-xs sm:text-sm ${q.completed ? 'line-through' : ''}">${escapeHtml(q.title)}</div>
+                                <div class="text-[11px] opacity-80 mt-0.5">
+                                    ${escapeHtml(sk ? sk.name : 'Предмет')} • <strong>+${q.xpReward} XP</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="deleteQuest('${q.id}')" class="pip-btn w-8 h-8 rounded-xl text-xs opacity-65 shrink-0">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateQuestCriterionDropdown() {
+            const skillId = document.getElementById('questSkillSelect').value;
+            const critSelect = document.getElementById('questCriterionSelect');
+            const skill = appState.skills.find(s => s.id === skillId);
+            if (!skill || !critSelect) return;
+            critSelect.innerHTML = skill.criteria.map(c =>
+                `<option value="${c.id}">${escapeHtml(c.name)}</option>`
+            ).join('');
+        }
+
+        function renderPerksView() {
+            const unlockedCount = PERKS_CATALOG.filter(p => p.check(appState)).length;
+            document.getElementById('perksCounterBadge').textContent = `Открыто: ${unlockedCount} / ${PERKS_CATALOG.length}`;
+
+            document.getElementById('mobilePerksGrid').innerHTML = PERKS_CATALOG.map(perk => {
+                const unlocked = perk.check(appState);
+                return `
+                    <div class="pip-card rounded-2xl p-3 flex items-center gap-3.5 ${unlocked ? 'border-2 border-[var(--pip-primary)]' : 'opacity-50'}">
+                        <div class="w-12 h-12 rounded-2xl pip-border flex items-center justify-center text-xl shrink-0 ${unlocked ? 'bg-[var(--pip-primary)] text-[var(--pip-bg)]' : ''}">
+                            <i class="fa-solid ${perk.icon}"></i>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center justify-between gap-1">
+                                <h3 class="font-extrabold text-xs uppercase truncate">${perk.title}</h3>
+                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded border border-current shrink-0">
+                                    ${unlocked ? 'ОТКРЫТ' : 'ЗАКРЫТ'}
+                                </span>
+                            </div>
+                            <p class="text-[11px] opacity-85 mt-0.5 leading-snug">${perk.desc}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // NAVIGATION & BOTTOM SHEETS
+        // ==========================================
+        function switchMobileTab(tabName) {
+            triggerFeedback('click');
+            activeTab = tabName;
+            ['skills', 'stat', 'quests', 'perks'].forEach(t => {
+                document.getElementById(`view-${t}`).classList.toggle('hidden', t !== tabName);
+                document.getElementById(`navBtn-${t}`).classList.toggle('active', t === tabName);
+            });
+            document.getElementById('mainScrollArea').scrollTop = 0;
+            renderAll();
+        }
+
+        function selectMobileSkill(skillId) {
+            triggerFeedback('click');
+            appState.selectedSkillId = skillId;
+            saveState();
+            renderSkillsView();
+        }
+
+        function openSheet(sheetId) {
+            triggerFeedback('click');
+            if (sheetId === 'profileSheet') {
+                document.getElementById('editStudentNameInput').value = appState.studentName;
+            }
+            document.getElementById(sheetId).classList.add('open');
+        }
+
+        function closeSheet(sheetId) {
+            triggerFeedback('click');
+            document.getElementById(sheetId).classList.remove('open');
+        }
+
+        function backdropClick(event, sheetId) {
+            if (event.target.id === sheetId) {
+                closeSheet(sheetId);
+            }
+        }
+
+        // ==========================================
+        // FORMS & HANDLERS
+        // ==========================================
+        function handleAddSkill(event) {
+            event.preventDefault();
+            const name = document.getElementById('newSkillName').value.trim();
+            const category = document.getElementById('newSkillCategory').value;
+            const icon = document.getElementById('newSkillIcon').value;
+            const desc = document.getElementById('newSkillDesc').value.trim();
+            const tpl = document.querySelector('input[name="skillTemplate"]:checked').value;
+
+            if (!name) return;
+            const newId = 'skill_' + Date.now();
+            const criteria = tpl === 'university'
+                ? [
+                    { id: newId + '_c1', name: 'Решение практики', type: 'practice', unit: 'задач', count: 0, xpPerUnit: 15, totalXp: 0 },
+                    { id: newId + '_c2', name: 'Чтение теории', type: 'theory', unit: 'лекций', count: 0, xpPerUnit: 20, totalXp: 0 },
+                    { id: newId + '_c3', name: 'Выученные наизусть темы', type: 'memory', unit: 'тем', count: 0, xpPerUnit: 40, totalXp: 0 }
+                ]
+                : [
+                    { id: newId + '_c1', name: 'Выполнение заданий', type: 'practice', unit: 'задач', count: 0, xpPerUnit: 20, totalXp: 0 }
+                ];
+
+            appState.skills.push({
+                id: newId,
+                name,
+                category,
+                icon,
+                description: desc || 'Прокачка дисциплины и решение учебных задач.',
+                criteria
+            });
+
+            appState.selectedSkillId = newId;
+            saveState();
+            closeSheet('addSkillSheet');
+            document.getElementById('newSkillName').value = '';
+            document.getElementById('newSkillDesc').value = '';
+            triggerFeedback('xp');
+            showToast(`Добавлен предмет: ${name}`, 'НОВЫЙ НАВЫК');
+            renderAll();
+        }
+
+        function deleteSkill(skillId) {
+            if (appState.skills.length <= 1) return;
+            triggerFeedback('click');
+            appState.skills = appState.skills.filter(s => s.id !== skillId);
+            appState.selectedSkillId = appState.skills[0].id;
+            saveState();
+            renderAll();
+        }
+
+        function handleAddCriterion(event) {
+            event.preventDefault();
+            const skill = appState.skills.find(s => s.id === appState.selectedSkillId);
+            if (!skill) return;
+
+            const name = document.getElementById('newCritName').value.trim();
+            const type = document.getElementById('newCritType').value;
+            const unit = document.getElementById('newCritUnit').value.trim() || 'ед.';
+            const xpPerUnit = parseInt(document.getElementById('newCritXp').value, 10) || 20;
+
+            if (!name) return;
+            skill.criteria.push({
+                id: 'crit_' + Date.now(),
+                name,
+                type,
+                unit,
+                count: 0,
+                xpPerUnit,
+                totalXp: 0
+            });
+
+            saveState();
+            closeSheet('addCriterionSheet');
+            document.getElementById('newCritName').value = '';
+            triggerFeedback('xp');
+            showToast(`Добавлен критерий: ${name}`, `+${xpPerUnit} XP`);
+            renderAll();
+        }
+
+        function handleCreateQuest(event) {
+            event.preventDefault();
+            const title = document.getElementById('questTitleInput').value.trim();
+            const skillId = document.getElementById('questSkillSelect').value;
+            const criterionId = document.getElementById('questCriterionSelect').value;
+            const xpReward = parseInt(document.querySelector('input[name="questXp"]:checked').value, 10) || 25;
+
+            if (!title) return;
+            appState.quests.unshift({
+                id: 'q_' + Date.now(),
+                title,
+                skillId,
+                criterionId,
+                xpReward,
+                completed: false
+            });
+
+            document.getElementById('questTitleInput').value = '';
+            saveState();
+            closeSheet('addQuestSheet');
+            triggerFeedback('xp');
+            showToast('Новый квест добавлен', `+${xpReward} XP`);
+            renderAll();
+        }
+
+        function toggleQuest(questId, event) {
+            const q = appState.quests.find(item => item.id === questId);
+            if (!q) return;
+
+            if (!q.completed) {
+                q.completed = true;
+                const skill = appState.skills.find(s => s.id === q.skillId);
+                if (skill) {
+                    const crit = skill.criteria.find(c => c.id === q.criterionId) || skill.criteria[0];
+                    if (crit) {
+                        modifyCriterionXP(skill.id, crit.id, 1, q.xpReward, `Квест: ${q.title}`, event);
+                        return;
+                    }
+                }
+                appState.bonusQuestXP = (appState.bonusQuestXP || 0) + q.xpReward;
+                triggerFeedback('xp');
+            } else {
+                q.completed = false;
+                triggerFeedback('click');
+            }
+            saveState();
+            renderAll();
+        }
+
+        function deleteQuest(questId) {
+            triggerFeedback('click');
+            appState.quests = appState.quests.filter(q => q.id !== questId);
+            saveState();
+            renderAll();
+        }
+
+        function handleSaveProfile(event) {
+            event.preventDefault();
+            const val = document.getElementById('editStudentNameInput').value.trim();
+            if (val) {
+                appState.studentName = val;
+                saveState();
+                renderAll();
+            }
+            closeSheet('profileSheet');
+            showToast('Профиль обновлен', val);
+        }
+
+        // Settings & Backup
+        function setTheme(themeName) {
+            triggerFeedback('click');
+            appState.theme = themeName;
+            saveState();
+            applySettingsUI();
+        }
+
+        function toggleCRT() {
+            triggerFeedback('click');
+            appState.crtEnabled = !appState.crtEnabled;
+            saveState();
+            applySettingsUI();
+        }
+
+        function toggleSound() {
+            appState.soundEnabled = !appState.soundEnabled;
+            if (appState.soundEnabled) triggerFeedback('click');
+            saveState();
+            applySettingsUI();
+        }
+
+        function toggleFrameMode() {
+            document.body.classList.toggle('phone-frame-mode');
+            const isFrame = document.body.classList.contains('phone-frame-mode');
+            document.getElementById('frameModeBtn').innerHTML = isFrame
+                ? '<i class="fa-solid fa-expand mr-1"></i>На весь экран'
+                : '<i class="fa-solid fa-mobile-screen mr-1"></i>Рамка смартфона';
+        }
+
+        function exportBackupJSON() {
+            triggerFeedback('click');
+            const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(appState, null, 2));
+            const a = document.createElement('a');
+            a.setAttribute('href', dataStr);
+            a.setAttribute('download', `pip-study-backup-${new Date().toISOString().slice(0, 10)}.json`);
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            showToast('Резервная копия сохранена', 'JSON');
+        }
+
+        function importBackupJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (imported && Array.isArray(imported.skills)) {
+                        appState = { ...getDefaultState(), ...imported };
+                        saveState();
+                        renderAll();
+                        triggerFeedback('levelup');
+                        showToast('Прогресс успешно загружен!', 'OK');
+                    }
+                } catch (err) {
+                    showToast('Ошибка файла резервной копии', 'ERR');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function confirmResetData() {
+            localStorage.removeItem(STORAGE_KEY);
+            appState = getDefaultState();
+            saveState();
+            closeSheet('resetSheet');
+            triggerFeedback('levelup');
+            showToast('Память терминала сброшена', 'RESET');
+            renderAll();
+        }
+
+        function escapeHtml(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('mobileClock').textContent = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        window.onload = function () {
+            updateClock();
+            setInterval(updateClock, 10000);
+            renderAll();
+        };
+    </script>
+</body>
+</html>

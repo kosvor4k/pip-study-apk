@@ -1,0 +1,17 @@
+{
+  "appId": "ru.pipstudy.terminal",
+  "appName": "PIP-STUDY 3000",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "android": {
+    "backgroundColor": "#050a06",
+    "allowMixedContent": true
+  },
+  "plugins": {
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#050a06",
+      "overlaysWebView": false
+    }
+  }
+}
