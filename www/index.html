@@ -122,7 +122,7 @@
             }
         }
 
-        /* CRT Overlay inside Phone Screen */
+        /* CRT Overlay & Harmonious Scanline Sweep */
         .crt-overlay {
             pointer-events: none;
             position: absolute;
@@ -133,10 +133,53 @@
                 radial-gradient(circle at center, transparent 62%, rgba(0, 0, 0, 0.55) 100%);
             background-size: 100% 4px, 100% 100%;
             opacity: 0.85;
+            overflow: hidden;
+        }
+
+        .crt-overlay::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: linear-gradient(180deg, transparent, var(--pip-primary-dim), transparent);
+            opacity: 0.28;
+            animation: crtSweep 9s linear infinite;
+        }
+
+        @keyframes crtSweep {
+            0% { top: -80px; }
+            100% { top: 100%; }
         }
 
         .crt-off .crt-overlay {
             display: none;
+        }
+
+        /* Harmonious View & Card Transitions */
+        @keyframes pipViewEnter {
+            0% {
+                opacity: 0;
+                transform: translateY(6px) scale(0.992);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .pip-view-animate {
+            animation: pipViewEnter 0.22s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        @keyframes xpBarPulse {
+            0% { filter: brightness(1); }
+            50% { filter: brightness(1.65); box-shadow: 0 0 14px var(--pip-primary); }
+            100% { filter: brightness(1); }
+        }
+
+        .xp-pulse {
+            animation: xpBarPulse 0.45s ease-out;
         }
 
         /* Pip-Boy Borders & Cards */
@@ -150,11 +193,13 @@
             border: 1px solid var(--pip-primary);
             background: linear-gradient(180deg, var(--pip-primary-dim) 0%, rgba(0, 0, 0, 0.55) 100%);
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+            transition: border-color 0.2s ease, transform 0.18s ease;
         }
 
         .pip-box-subtle {
             border: 1px solid var(--pip-primary-dim);
             background-color: rgba(0, 0, 0, 0.38);
+            transition: all 0.18s ease;
         }
 
         /* Tactile Mobile Buttons */
@@ -164,7 +209,7 @@
             background-color: rgba(0, 0, 0, 0.45);
             font-weight: 700;
             letter-spacing: 0.03em;
-            transition: transform 0.1s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+            transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.15s ease, box-shadow 0.15s ease;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -173,7 +218,7 @@
         }
 
         .pip-btn:active {
-            transform: scale(0.94);
+            transform: scale(0.93);
             background-color: var(--pip-primary);
             color: var(--pip-bg);
             text-shadow: none;
@@ -189,7 +234,7 @@
         }
 
         .pip-btn-solid:active {
-            transform: scale(0.94);
+            transform: scale(0.93);
             opacity: 0.9;
         }
 
@@ -198,10 +243,11 @@
             border: 1.5px solid var(--pip-primary);
             color: var(--pip-primary);
             outline: none;
-            padding: 0.65rem 0.75rem;
-            border-radius: 0.6rem;
-            font-size: 0.875rem;
+            padding: 0.6rem 0.75rem;
+            border-radius: 0.65rem;
+            font-size: 0.85rem;
             width: 100%;
+            transition: box-shadow 0.18s ease;
         }
 
         .pip-input:focus {
@@ -232,7 +278,7 @@
                 transparent 9px
             );
             box-shadow: 0 0 8px var(--pip-primary-glow);
-            transition: width 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: width 0.38s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         /* Bottom Sheet Slide Animation */
@@ -262,7 +308,7 @@
             border-top-left-radius: 1.35rem;
             border-top-right-radius: 1.35rem;
             transform: translateY(100%);
-            transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
             max-height: 88%;
             display: flex;
             flex-direction: column;
@@ -280,7 +326,7 @@
             right: 1rem;
             z-index: 85;
             transform: translateY(-140%);
-            transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
             pointer-events: none;
         }
 
@@ -308,7 +354,7 @@
         /* Bottom Nav Active Indicator */
         .nav-tab-btn {
             position: relative;
-            transition: all 0.15s ease;
+            transition: all 0.16s ease;
             opacity: 0.65;
         }
         .nav-tab-btn.active {
@@ -317,14 +363,24 @@
             box-shadow: inset 0 2px 0 var(--pip-primary);
         }
         .nav-tab-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.94);
+        }
+
+        /* Subtle Edit Shake for Attribute Customization Mode */
+        @keyframes editPulse {
+            0%, 100% { border-color: var(--pip-primary); }
+            50% { border-color: var(--pip-accent); box-shadow: 0 0 10px var(--pip-primary-dim); }
+        }
+        .attr-editable {
+            animation: editPulse 1.6s infinite ease-in-out;
+            cursor: pointer;
         }
     </style>
 </head>
 <body class="phone-frame-mode">
 
     <div class="app-viewport">
-        <!-- Desktop Top Floating Bar (Only visible on larger screens to toggle Phone Frame vs Fullscreen) -->
+        <!-- Desktop Top Floating Bar (Only visible on larger screens) -->
         <div class="hidden sm:flex items-center justify-between w-full max-w-[430px] mb-2 px-2 text-xs opacity-85">
             <span class="font-bold tracking-wider"><i class="fa-solid fa-mobile-screen-button mr-1"></i>PIP-STUDY 3000 MOBILE</span>
             <button onclick="toggleFrameMode()" id="frameModeBtn" class="px-2.5 py-1 rounded border border-current hover:bg-[var(--pip-primary)] hover:text-black transition font-bold">
@@ -357,7 +413,7 @@
                 <div class="flex items-center justify-between text-[11px] opacity-80 mb-2">
                     <div class="flex items-center gap-1.5 font-bold">
                         <i class="fa-solid fa-radiation fa-spin" style="animation-duration: 12s;"></i>
-                        <span>VAULT-OS 3.5</span>
+                        <span>VAULT-OS 3.6</span>
                         <span>•</span>
                         <span id="mobileClock">12:00</span>
                     </div>
@@ -391,7 +447,7 @@
                             </span>
                         </div>
 
-                        <div class="pip-progress-track h-2.5 rounded-md">
+                        <div id="headerXPTrack" class="pip-progress-track h-2.5 rounded-md">
                             <div id="headerXPBar" class="pip-progress-fill" style="width: 0%;"></div>
                         </div>
                     </div>
@@ -404,40 +460,35 @@
                 <!-- ==========================================
                      TAB 1: ПРЕДМЕТЫ / НАВЫКИ (SKILLS - DEFAULT MOBILE HOME)
                      ========================================== -->
-                <section id="view-skills" class="space-y-3 pb-4">
-                    <!-- Quick Filter / Add Subject Row -->
+                <section id="view-skills" class="pip-view-animate space-y-3 pb-4">
                     <div class="flex items-center justify-between gap-2">
                         <div>
                             <h1 class="text-sm font-extrabold uppercase tracking-wider flex items-center gap-1.5">
                                 <i class="fa-solid fa-graduation-cap"></i> Дисциплины и Навыки
                             </h1>
-                            <p class="text-[11px] opacity-75">Создавайте свои предметы и прокачивайте уровень</p>
+                            <p class="text-[11px] opacity-75">Создавайте предметы и прокачивайте уровень</p>
                         </div>
                         <button onclick="openSheet('addSkillSheet')" class="pip-btn pip-btn-solid px-3 py-2 rounded-xl text-xs shrink-0">
                             <i class="fa-solid fa-plus"></i> Предмет
                         </button>
                     </div>
 
-                    <!-- Horizontal Subject Pills for fast switching -->
-                    <div id="subjectPillsBar" class="flex items-center gap-1.5 overflow-x-auto pb-1 empty:hidden">
-                        <!-- Rendered via JS -->
-                    </div>
+                    <!-- Horizontal Subject Pills -->
+                    <div id="subjectPillsBar" class="flex items-center gap-1.5 overflow-x-auto pb-1 empty:hidden"></div>
 
-                    <!-- Active Subject Card with Tactile Criteria Controls -->
-                    <div id="activeSubjectContainer" class="space-y-3">
-                        <!-- Rendered via JS -->
-                    </div>
+                    <!-- Active Subject Card -->
+                    <div id="activeSubjectContainer" class="space-y-3"></div>
                 </section>
 
                 <!-- ==========================================
-                     TAB 2: ПРОФИЛЬ / СТАТ (CHARACTER STATS & S.P.E.C.I.A.L.)
+                     TAB 2: ПРОФИЛЬ / СТАТ (CHARACTER STATS & CUSTOMIZABLE У.Ч.Ё.Б.А.)
                      ========================================== -->
                 <section id="view-stat" class="hidden space-y-3.5 pb-4">
                     <!-- Student Vault ID Card -->
                     <div class="pip-card rounded-2xl p-3.5">
                         <div class="flex items-center gap-3.5">
                             <!-- Vault Student SVG Avatar -->
-                            <div class="w-20 h-20 rounded-2xl pip-border flex items-center justify-center p-2 bg-black/50 shrink-0">
+                            <div class="w-18 h-18 w-[74px] h-[74px] rounded-2xl pip-border flex items-center justify-center p-2 bg-black/50 shrink-0">
                                 <svg viewBox="0 0 100 100" class="w-full h-full fill-current">
                                     <polygon points="50,10 10,27 50,43 90,27" />
                                     <rect x="83" y="27" width="3" height="18" />
@@ -474,14 +525,45 @@
                         </div>
                     </div>
 
-                    <!-- S.P.E.C.I.A.L. -> У.Ч.Е.Б.А. -->
+                    <!-- CUSTOMIZABLE У.Ч.Ё.Б.А. ATTRIBUTES -->
                     <div class="pip-card rounded-2xl p-3.5">
-                        <div class="flex items-center justify-between mb-2">
-                            <h2 class="text-xs font-extrabold uppercase tracking-wider flex items-center gap-1.5">
-                                <i class="fa-solid fa-microchip"></i> Характеристики «У.Ч.Е.Б.А.»
-                            </h2>
-                            <span class="text-[10px] opacity-75">Шкала 1–10</span>
+                        <div class="flex items-center justify-between gap-2 mb-2.5">
+                            <div class="min-w-0">
+                                <h2 class="text-xs font-extrabold uppercase tracking-wider flex items-center gap-1.5">
+                                    <i class="fa-solid fa-microchip"></i>
+                                    <span id="specialDynamicTitle">Характеристики «У.Ч.Ё.Б.А.»</span>
+                                </h2>
+                                <p id="specialSubHint" class="text-[10px] opacity-70 truncate">Нажмите ⚙ для изменения шкалы и состава</p>
+                            </div>
+
+                            <!-- Compact Mobile Controls: Add (+) and Toggle Edit Mode (Gear) -->
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <button onclick="openAttributeModal(null)" class="pip-btn w-8 h-8 rounded-xl text-xs" title="Добавить характеристику">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                                <button onclick="toggleAttrEditMode()" id="attrEditModeBtn" class="pip-btn w-8 h-8 rounded-xl text-xs" title="Настроить характеристики">
+                                    <i class="fa-solid fa-sliders"></i>
+                                </button>
+                            </div>
                         </div>
+
+                        <!-- Compact Quick-Max Bar (Only appears when Edit Mode is toggled ON) -->
+                        <div id="attrGlobalMaxBar" class="hidden pip-box-subtle rounded-xl p-2.5 mb-2.5 space-y-2">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-[10px] font-bold uppercase opacity-85">Общий макс. лимит для всех:</span>
+                                <div class="flex items-center gap-1">
+                                    <input type="number" id="bulkMaxInput" min="5" max="9999" value="10" class="pip-input py-1 px-2 text-xs w-20 text-center">
+                                    <button onclick="applyBulkMaxAttribute()" class="pip-btn pip-btn-solid px-2.5 py-1 rounded-lg text-[10px]">
+                                        Применить
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between text-[10px] opacity-80 pt-1 border-t border-[var(--pip-primary-dim)]">
+                                <span>Нажмите на любую строку ниже для её настройки</span>
+                                <button onclick="resetDefaultAttributes()" class="underline font-bold">Сбросить базовые</button>
+                            </div>
+                        </div>
+
                         <div id="specialMobileList" class="space-y-2">
                             <!-- Populated by JS -->
                         </div>
@@ -492,9 +574,7 @@
                         <h2 class="text-xs font-extrabold uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
                             <i class="fa-solid fa-bars-progress"></i> Уровни Владения Предметами
                         </h2>
-                        <div id="statSubjectSummaryList" class="space-y-2.5">
-                            <!-- Populated by JS -->
-                        </div>
+                        <div id="statSubjectSummaryList" class="space-y-2.5"></div>
                     </div>
 
                     <!-- Recent Activity Terminal Feed -->
@@ -505,9 +585,7 @@
                             </h2>
                             <span class="text-[10px] opacity-70">Последние записи</span>
                         </div>
-                        <div id="mobileActivityLog" class="space-y-1.5 max-h-48 overflow-y-auto text-[11px] font-mono pr-1">
-                            <!-- Populated by JS -->
-                        </div>
+                        <div id="mobileActivityLog" class="space-y-1.5 max-h-48 overflow-y-auto text-[11px] font-mono pr-1"></div>
                     </div>
                 </section>
 
@@ -527,16 +605,13 @@
                         </button>
                     </div>
 
-                    <div id="mobileQuestsList" class="space-y-2.5">
-                        <!-- Populated by JS -->
-                    </div>
+                    <div id="mobileQuestsList" class="space-y-2.5"></div>
                 </section>
 
                 <!-- ==========================================
                      TAB 4: ПЕРКИ И ОПЦИИ (PERKS & SETTINGS)
                      ========================================== -->
                 <section id="view-perks" class="hidden space-y-4 pb-4">
-                    <!-- Perks Grid -->
                     <div>
                         <div class="flex items-center justify-between mb-2">
                             <h2 class="text-sm font-extrabold uppercase tracking-wider flex items-center gap-1.5">
@@ -544,9 +619,7 @@
                             </h2>
                             <span id="perksCounterBadge" class="text-xs font-extrabold px-2 py-0.5 rounded border border-current">0 / 8</span>
                         </div>
-                        <div id="mobilePerksGrid" class="grid grid-cols-1 gap-2.5">
-                            <!-- Populated by JS -->
-                        </div>
+                        <div id="mobilePerksGrid" class="grid grid-cols-1 gap-2.5"></div>
                     </div>
 
                     <!-- Terminal Settings & PWA Options -->
@@ -555,7 +628,6 @@
                             <i class="fa-solid fa-sliders"></i> Настройки Карманного Терминала
                         </h2>
 
-                        <!-- Color Theme Selector -->
                         <div>
                             <div class="text-[11px] font-bold uppercase mb-1.5 opacity-85">Цветовая схема экрана:</div>
                             <div class="grid grid-cols-2 gap-2">
@@ -578,7 +650,6 @@
                             </div>
                         </div>
 
-                        <!-- Toggles Row -->
                         <div class="grid grid-cols-2 gap-2 pt-1">
                             <button onclick="toggleCRT()" id="settingsCrtBtn" class="pip-btn py-2.5 px-3 rounded-xl text-xs">
                                 <i class="fa-solid fa-tv"></i> ЭЛТ-Фильтр
@@ -588,7 +659,6 @@
                             </button>
                         </div>
 
-                        <!-- Backup Export / Import -->
                         <div class="pt-1 border-t border-[var(--pip-primary-dim)]">
                             <div class="text-[11px] font-bold uppercase mb-1.5 opacity-85">Резервная копия прогресса:</div>
                             <div class="grid grid-cols-2 gap-2">
@@ -602,7 +672,6 @@
                             </div>
                         </div>
 
-                        <!-- Install on Phone Hint & Reset -->
                         <div class="pt-1 border-t border-[var(--pip-primary-dim)] flex items-center justify-between gap-2">
                             <button onclick="openSheet('pwaHelpSheet')" class="pip-btn flex-1 py-2 px-3 rounded-xl text-xs">
                                 <i class="fa-solid fa-mobile-screen"></i> Как добавить на экран телефона
@@ -651,6 +720,71 @@
             <!-- ==========================================
                  MOBILE BOTTOM SHEETS (SLIDE-UP MODALS)
                  ========================================== -->
+
+            <!-- Bottom Sheet: Add / Edit Attribute (У.Ч.Ё.Б.А.) -->
+            <div id="attributeModalSheet" class="bottom-sheet-backdrop" onclick="backdropClick(event, 'attributeModalSheet')">
+                <div class="bottom-sheet-panel p-4">
+                    <div class="w-10 h-1 bg-[var(--pip-primary)] opacity-50 rounded-full mx-auto mb-3"></div>
+                    <div class="flex items-center justify-between mb-3 pb-2 border-b border-[var(--pip-primary-dim)]">
+                        <h3 id="attrModalTitle" class="text-sm font-extrabold uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-microchip"></i> Настройка Характеристики
+                        </h3>
+                        <button onclick="closeSheet('attributeModalSheet')" class="p-1 text-base"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <form onsubmit="handleSaveAttribute(event)" class="space-y-3 overflow-y-auto pr-1">
+                        <input type="hidden" id="attrEditId">
+
+                        <div class="grid grid-cols-4 gap-2.5">
+                            <div class="col-span-1">
+                                <label class="block text-[10px] uppercase font-bold mb-1">Буква</label>
+                                <input type="text" id="attrLetterInput" required maxlength="2" placeholder="У" class="pip-input text-center font-extrabold uppercase">
+                            </div>
+                            <div class="col-span-3">
+                                <label class="block text-[10px] uppercase font-bold mb-1">Название характеристики</label>
+                                <input type="text" id="attrNameInput" required maxlength="32" placeholder="Напр.: Упорство" class="pip-input">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[10px] uppercase font-bold mb-1">Макс. значение (лимит)</label>
+                                <input type="number" id="attrMaxInput" required min="2" max="99999" value="10" class="pip-input font-bold">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase font-bold mb-1">База / Ручной бонус</label>
+                                <input type="number" id="attrBaseInput" required min="0" max="99999" value="1" class="pip-input font-bold">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold mb-1">От чего растет автоматически?</label>
+                            <select id="attrSourceSelect" onchange="toggleAttrXpStepRow()" class="pip-input text-xs">
+                                <option value="practice">От критериев «Практика / Задачи»</option>
+                                <option value="theory">От критериев «Теория / Чтение»</option>
+                                <option value="memory">От критериев «Память / Билеты»</option>
+                                <option value="quests">От количества выполненных Квестов</option>
+                                <option value="level">От общего Уровня персонажа</option>
+                                <option value="manual">Только вручную (фиксированное значение)</option>
+                            </select>
+                        </div>
+
+                        <div id="attrXpStepRow">
+                            <label class="block text-[10px] uppercase font-bold mb-1">Сколько XP нужно для +1 к характеристике?</label>
+                            <input type="number" id="attrXpStepInput" min="5" max="5000" step="5" value="45" class="pip-input text-xs">
+                        </div>
+
+                        <div class="flex items-center gap-2 pt-1">
+                            <button type="button" id="attrDeleteBtn" onclick="handleDeleteAttribute()" class="pip-btn px-3.5 py-3 rounded-xl text-xs text-[var(--pip-danger)] border-[var(--pip-danger)]">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                            <button type="submit" class="pip-btn pip-btn-solid flex-1 py-3 rounded-xl text-xs uppercase tracking-wider">
+                                <i class="fa-solid fa-check"></i> Сохранить
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
             <!-- Bottom Sheet 1: Add New Subject -->
             <div id="addSkillSheet" class="bottom-sheet-backdrop" onclick="backdropClick(event, 'addSkillSheet')">
@@ -736,11 +870,11 @@
                         </div>
 
                         <div>
-                            <label class="block text-[11px] uppercase font-bold mb-1">Тип нагрузки (прокачивает У.Ч.Е.Б.А.)</label>
+                            <label class="block text-[11px] uppercase font-bold mb-1">Тип нагрузки (связь с характеристиками)</label>
                             <select id="newCritType" class="pip-input">
-                                <option value="practice">Практика / Задачи (Упорство)</option>
-                                <option value="theory">Чтение теории / Конспекты (Чтение)</option>
-                                <option value="memory">Выученные наизусть билеты (Память)</option>
+                                <option value="practice">Практика / Задачи</option>
+                                <option value="theory">Чтение теории / Конспекты</option>
+                                <option value="memory">Выученные наизусть билеты / Память</option>
                             </select>
                         </div>
 
@@ -905,7 +1039,7 @@
          MOBILE APPLICATION LOGIC
          ========================================== -->
     <script>
-        const STORAGE_KEY = 'pip_study_3000_clean_v1';
+        const STORAGE_KEY = 'pip_study_3000_clean_v2';
 
         const CHARACTER_RANKS = [
             { minLevel: 1, title: 'Абитуриент Убежища' },
@@ -916,6 +1050,17 @@
             { minLevel: 12, title: 'Магистр Пустоши' },
             { minLevel: 16, title: 'Легенда Университета' }
         ];
+
+        // Базовые характеристики У.Ч.Ё.Б.А. (пользователь может их менять, удалять или добавлять свои)
+        function getDefaultAttributes() {
+            return [
+                { id: 'attr_u', letter: 'У', name: 'Упорство (Практика)', max: 10, baseValue: 1, source: 'practice', xpPerPoint: 45 },
+                { id: 'attr_ch', letter: 'Ч', name: 'Чтение (Теория и лекции)', max: 10, baseValue: 1, source: 'theory', xpPerPoint: 40 },
+                { id: 'attr_yo', letter: 'Ё', name: 'Ёмкость памяти (Билеты)', max: 10, baseValue: 1, source: 'memory', xpPerPoint: 45 },
+                { id: 'attr_b', letter: 'Б', name: 'Боеготовность (Квесты)', max: 10, baseValue: 1, source: 'quests', xpPerPoint: 1 },
+                { id: 'attr_a', letter: 'А', name: 'Активность (Ранг)', max: 10, baseValue: 0, source: 'level', xpPerPoint: 1 }
+            ];
+        }
 
         function getSkillRankTitle(level) {
             if (level <= 1) return 'Новичок';
@@ -984,7 +1129,6 @@
             }
         ];
 
-        // Изначальное состояние: Уровень 1 (0 XP), пустой список предметов и задач
         function getDefaultState() {
             return {
                 studentName: 'Студент-Выживший',
@@ -996,6 +1140,7 @@
                 bonusQuestXP: 0,
                 streakDays: 0,
                 lastStudyDate: null,
+                attributes: getDefaultAttributes(),
                 skills: [],
                 quests: [],
                 activityLog: []
@@ -1004,13 +1149,19 @@
 
         let appState = loadState();
         let activeTab = 'skills';
+        let attrEditMode = false;
         let toastTimer = null;
 
         function loadState() {
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
                 if (!raw) return getDefaultState();
-                return { ...getDefaultState(), ...JSON.parse(raw) };
+                const parsed = JSON.parse(raw);
+                const state = { ...getDefaultState(), ...parsed };
+                if (!Array.isArray(state.attributes)) {
+                    state.attributes = getDefaultAttributes();
+                }
+                return state;
             } catch (e) {
                 return getDefaultState();
             }
@@ -1131,13 +1282,43 @@
             return sum;
         }
 
-        // Update Streak when user studies
+        // Вычисление текущего значения любой настраиваемой характеристики
+        function computeAttributeValue(attr, state) {
+            const maxVal = Math.max(1, Number(attr.max) || 10);
+            const baseVal = Number(attr.baseValue) || 0;
+            const step = Math.max(1, Number(attr.xpPerPoint) || 45);
+            let gained = 0;
+
+            if (attr.source === 'practice' || attr.source === 'theory' || attr.source === 'memory') {
+                const xp = getTotalXPByType(state, attr.source);
+                gained = Math.floor(xp / step);
+            } else if (attr.source === 'quests') {
+                gained = state.quests.filter(q => q.completed).length;
+            } else if (attr.source === 'level') {
+                gained = getCharacterLevelInfo(state).level;
+            } else {
+                gained = 0;
+            }
+
+            const total = Math.min(maxVal, Math.max(0, baseVal + gained));
+            const pct = Math.min(100, Math.round((total / maxVal) * 100));
+            return { val: total, max: maxVal, pct };
+        }
+
         function updateStreakOnAction() {
             const today = new Date().toISOString().slice(0, 10);
             if (appState.lastStudyDate !== today) {
                 appState.streakDays = (appState.streakDays || 0) + 1;
                 appState.lastStudyDate = today;
             }
+        }
+
+        function pulseXPHeaderBar() {
+            const track = document.getElementById('headerXPTrack');
+            if (!track) return;
+            track.classList.remove('xp-pulse');
+            void track.offsetWidth;
+            track.classList.add('xp-pulse');
         }
 
         // Core Action: Modify Criterion (+1 or -1 or custom)
@@ -1175,6 +1356,7 @@
             renderAll();
 
             if (unitDelta > 0) {
+                pulseXPHeaderBar();
                 if (event && event.clientX) {
                     spawnFloatingXP(event.clientX, event.clientY, `+${xpDelta} XP`);
                 }
@@ -1288,7 +1470,6 @@
             const pillsBar = document.getElementById('subjectPillsBar');
             const container = document.getElementById('activeSubjectContainer');
 
-            // Если у пользователя еще нет ни одного предмета
             if (appState.skills.length === 0) {
                 pillsBar.innerHTML = '';
                 container.innerHTML = `
@@ -1310,7 +1491,6 @@
                 return;
             }
 
-            // Render Horizontal Subject Pills
             pillsBar.innerHTML = appState.skills.map(skill => {
                 const isSelected = skill.id === appState.selectedSkillId;
                 const sInfo = getSkillLevelInfo(skill);
@@ -1350,7 +1530,6 @@
                                 </div>
                             </div>
 
-                            <!-- Thumb-Friendly -1 / +1 Buttons -->
                             <div class="flex items-center gap-1.5 shrink-0">
                                 <button onclick="modifyCriterionXP('${skill.id}', '${crit.id}', -1, null, null, event)"
                                         class="pip-btn w-9 h-10 rounded-xl text-xs opacity-75" title="Убрать 1">
@@ -1363,7 +1542,6 @@
                             </div>
                         </div>
 
-                        <!-- Criterion Mini Bar -->
                         <div class="flex items-center gap-2">
                             <div class="pip-progress-track h-2 rounded flex-1">
                                 <div class="pip-progress-fill" style="width: ${cInfo.progressPct}%;"></div>
@@ -1375,7 +1553,6 @@
             }).join('');
 
             container.innerHTML = `
-                <!-- Selected Subject Overview Card -->
                 <div class="pip-card rounded-2xl p-3.5 space-y-2.5">
                     <div class="flex items-start justify-between gap-2">
                         <div class="flex items-center gap-2.5 min-w-0">
@@ -1410,7 +1587,6 @@
                     </div>
                 </div>
 
-                <!-- Criteria Header + Add Criterion Button -->
                 <div class="flex items-center justify-between pt-1">
                     <h3 class="text-xs font-extrabold uppercase tracking-wider flex items-center gap-1.5">
                         <i class="fa-solid fa-sliders"></i> Критерии и Темы Предмета
@@ -1420,12 +1596,10 @@
                     </button>
                 </div>
 
-                <!-- Criteria List -->
                 <div class="space-y-2.5">
                     ${criteriaCards}
                 </div>
 
-                <!-- Quick Custom Study Log inside Subject -->
                 <form onsubmit="handleQuickNoteTask(event, '${skill.id}')" class="pip-card rounded-2xl p-3 space-y-2">
                     <div class="text-[11px] font-extrabold uppercase flex items-center gap-1.5">
                         <i class="fa-solid fa-bolt"></i> Записать конкретную изученную тему:
@@ -1456,32 +1630,64 @@
             document.getElementById('statActions').textContent = appState.totalActions || 0;
             document.getElementById('statStreak').textContent = `${appState.streakDays || 0} дн.`;
 
-            const practiceXP = getTotalXPByType(appState, 'practice');
-            const theoryXP = getTotalXPByType(appState, 'theory');
-            const memoryXP = getTotalXPByType(appState, 'memory');
-            const doneQuests = appState.quests.filter(q => q.completed).length;
+            // Формируем динамическую аббревиатуру из первых букв характеристик (напр. У.Ч.Ё.Б.А.)
+            const acronym = appState.attributes.length > 0
+                ? appState.attributes.map(a => (a.letter || '?').toUpperCase()).join('.') + '.'
+                : 'Пусто';
+            document.getElementById('specialDynamicTitle').textContent = `Характеристики «${acronym}»`;
 
-            const attrs = [
-                { letter: 'У', name: 'Упорство (Практика)', val: Math.min(10, 1 + Math.floor(practiceXP / 45)) },
-                { letter: 'Ч', name: 'Чтение (Теория и лекции)', val: Math.min(10, 1 + Math.floor(theoryXP / 40)) },
-                { letter: 'Е', name: 'Емкость памяти (Билеты)', val: Math.min(10, 1 + Math.floor(memoryXP / 45)) },
-                { letter: 'Б', name: 'Боеготовность (Квесты)', val: Math.min(10, 1 + doneQuests) },
-                { letter: 'А', name: 'Активность (Ранг и стрик)', val: Math.min(10, charInfo.level) }
-            ];
+            const editBtn = document.getElementById('attrEditModeBtn');
+            const globalMaxBar = document.getElementById('attrGlobalMaxBar');
+            const subHint = document.getElementById('specialSubHint');
 
-            document.getElementById('specialMobileList').innerHTML = attrs.map(a => `
-                <div class="pip-box-subtle p-2 rounded-xl">
-                    <div class="flex justify-between text-xs font-bold mb-1">
-                        <span>
-                            <strong class="px-1.5 py-0.2 rounded bg-[var(--pip-primary)] text-[var(--pip-bg)] mr-1.5">${a.letter}</strong>${a.name}
-                        </span>
-                        <span>${a.val}/10</span>
+            if (attrEditMode) {
+                editBtn.classList.add('pip-btn-solid');
+                globalMaxBar.classList.remove('hidden');
+                subHint.textContent = 'Режим настройки: нажмите на характеристику';
+            } else {
+                editBtn.classList.remove('pip-btn-solid');
+                globalMaxBar.classList.add('hidden');
+                subHint.textContent = 'Нажмите ⚙ для изменения лимитов и состава';
+            }
+
+            const specialListEl = document.getElementById('specialMobileList');
+            if (appState.attributes.length === 0) {
+                specialListEl.innerHTML = `
+                    <div class="pip-box-subtle rounded-xl p-4 text-center space-y-2">
+                        <div class="text-xs opacity-75">Все характеристики убраны.</div>
+                        <div class="flex justify-center gap-2">
+                            <button onclick="openAttributeModal(null)" class="pip-btn pip-btn-solid px-3 py-1.5 rounded-lg text-xs">
+                                <i class="fa-solid fa-plus"></i> Добавить свою
+                            </button>
+                            <button onclick="resetDefaultAttributes()" class="pip-btn px-3 py-1.5 rounded-lg text-xs">
+                                Вернуть базовые
+                            </button>
+                        </div>
                     </div>
-                    <div class="pip-progress-track h-2 rounded">
-                        <div class="pip-progress-fill" style="width: ${a.val * 10}%;"></div>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            } else {
+                specialListEl.innerHTML = appState.attributes.map(attr => {
+                    const info = computeAttributeValue(attr, appState);
+                    return `
+                        <div onclick="handleAttributeRowClick('${attr.id}')"
+                             class="pip-box-subtle p-2.5 rounded-xl ${attrEditMode ? 'attr-editable' : 'active:scale-[0.99]'}">
+                            <div class="flex items-center justify-between text-xs font-bold mb-1.5 gap-2">
+                                <span class="truncate flex items-center gap-1.5">
+                                    <strong class="w-5 h-5 inline-flex items-center justify-center rounded bg-[var(--pip-primary)] text-[var(--pip-bg)] text-[11px] shrink-0">${escapeHtml(attr.letter)}</strong>
+                                    <span class="truncate">${escapeHtml(attr.name)}</span>
+                                </span>
+                                <span class="shrink-0 flex items-center gap-1.5 font-mono">
+                                    <strong>${info.val}</strong><span class="opacity-65">/${info.max}</span>
+                                    ${attrEditMode ? '<i class="fa-solid fa-pen text-[10px] opacity-80 ml-0.5"></i>' : ''}
+                                </span>
+                            </div>
+                            <div class="pip-progress-track h-2 rounded">
+                                <div class="pip-progress-fill" style="width: ${info.pct}%;"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
 
             const summaryEl = document.getElementById('statSubjectSummaryList');
             if (appState.skills.length === 0) {
@@ -1514,6 +1720,139 @@
                     </div>
                 `).join('');
             }
+        }
+
+        // ==========================================
+        // CUSTOMIZABLE ATTRIBUTES (У.Ч.Ё.Б.А.) HANDLERS
+        // ==========================================
+        function toggleAttrEditMode() {
+            triggerFeedback('click');
+            attrEditMode = !attrEditMode;
+            if (attrEditMode && appState.attributes.length > 0) {
+                document.getElementById('bulkMaxInput').value = appState.attributes[0].max || 10;
+            }
+            renderStatView();
+        }
+
+        function handleAttributeRowClick(attrId) {
+            openAttributeModal(attrId);
+        }
+
+        function toggleAttrXpStepRow() {
+            const source = document.getElementById('attrSourceSelect').value;
+            const row = document.getElementById('attrXpStepRow');
+            if (source === 'practice' || source === 'theory' || source === 'memory') {
+                row.classList.remove('hidden');
+            } else {
+                row.classList.add('hidden');
+            }
+        }
+
+        function openAttributeModal(attrId = null) {
+            triggerFeedback('click');
+            const idInput = document.getElementById('attrEditId');
+            const letterInput = document.getElementById('attrLetterInput');
+            const nameInput = document.getElementById('attrNameInput');
+            const maxInput = document.getElementById('attrMaxInput');
+            const baseInput = document.getElementById('attrBaseInput');
+            const sourceSelect = document.getElementById('attrSourceSelect');
+            const xpStepInput = document.getElementById('attrXpStepInput');
+            const deleteBtn = document.getElementById('attrDeleteBtn');
+            const modalTitle = document.getElementById('attrModalTitle');
+
+            if (attrId) {
+                const attr = appState.attributes.find(a => a.id === attrId);
+                if (!attr) return;
+                modalTitle.innerHTML = `<i class="fa-solid fa-sliders"></i> Изменить характеристику`;
+                idInput.value = attr.id;
+                letterInput.value = attr.letter;
+                nameInput.value = attr.name;
+                maxInput.value = attr.max || 10;
+                baseInput.value = attr.baseValue ?? 1;
+                sourceSelect.value = attr.source || 'practice';
+                xpStepInput.value = attr.xpPerPoint || 45;
+                deleteBtn.classList.remove('hidden');
+            } else {
+                modalTitle.innerHTML = `<i class="fa-solid fa-plus-circle"></i> Новая характеристика`;
+                idInput.value = '';
+                letterInput.value = '';
+                nameInput.value = '';
+                const defaultMax = appState.attributes[0] ? appState.attributes[0].max : 10;
+                maxInput.value = defaultMax;
+                baseInput.value = 1;
+                sourceSelect.value = 'practice';
+                xpStepInput.value = 45;
+                deleteBtn.classList.add('hidden');
+            }
+
+            toggleAttrXpStepRow();
+            openSheet('attributeModalSheet');
+        }
+
+        function handleSaveAttribute(event) {
+            event.preventDefault();
+            const id = document.getElementById('attrEditId').value;
+            const letter = (document.getElementById('attrLetterInput').value.trim() || 'Х').toUpperCase();
+            const name = document.getElementById('attrNameInput').value.trim();
+            const max = Math.max(2, parseInt(document.getElementById('attrMaxInput').value, 10) || 10);
+            const baseValue = Math.max(0, parseInt(document.getElementById('attrBaseInput').value, 10) || 0);
+            const source = document.getElementById('attrSourceSelect').value;
+            const xpPerPoint = Math.max(5, parseInt(document.getElementById('attrXpStepInput').value, 10) || 45);
+
+            if (!name) return;
+
+            if (id) {
+                const idx = appState.attributes.findIndex(a => a.id === id);
+                if (idx !== -1) {
+                    appState.attributes[idx] = { id, letter, name, max, baseValue, source, xpPerPoint };
+                }
+            } else {
+                appState.attributes.push({
+                    id: 'attr_' + Date.now(),
+                    letter,
+                    name,
+                    max,
+                    baseValue,
+                    source,
+                    xpPerPoint
+                });
+            }
+
+            saveState();
+            closeSheet('attributeModalSheet');
+            triggerFeedback('xp');
+            showToast(`Характеристика «${name}» сохранена`, `МАКС: ${max}`);
+            renderAll();
+        }
+
+        function handleDeleteAttribute() {
+            const id = document.getElementById('attrEditId').value;
+            if (!id) return;
+            triggerFeedback('click');
+            appState.attributes = appState.attributes.filter(a => a.id !== id);
+            saveState();
+            closeSheet('attributeModalSheet');
+            showToast('Характеристика убрана', 'DEL');
+            renderAll();
+        }
+
+        function applyBulkMaxAttribute() {
+            const newMax = Math.max(2, parseInt(document.getElementById('bulkMaxInput').value, 10) || 10);
+            appState.attributes.forEach(a => {
+                a.max = newMax;
+            });
+            saveState();
+            triggerFeedback('xp');
+            showToast(`Максимальная шкала установлена на ${newMax}`, `МАКС ${newMax}`);
+            renderStatView();
+        }
+
+        function resetDefaultAttributes() {
+            triggerFeedback('click');
+            appState.attributes = getDefaultAttributes();
+            saveState();
+            showToast('Базовые характеристики У.Ч.Ё.Б.А. восстановлены', 'OK');
+            renderStatView();
         }
 
         function openQuestModal() {
@@ -1619,8 +1958,15 @@
             triggerFeedback('click');
             activeTab = tabName;
             ['skills', 'stat', 'quests', 'perks'].forEach(t => {
-                document.getElementById(`view-${t}`).classList.toggle('hidden', t !== tabName);
-                document.getElementById(`navBtn-${t}`).classList.toggle('active', t === tabName);
+                const viewEl = document.getElementById(`view-${t}`);
+                const isTarget = t === tabName;
+                viewEl.classList.toggle('hidden', !isTarget);
+                if (isTarget) {
+                    viewEl.classList.remove('pip-view-animate');
+                    void viewEl.offsetWidth;
+                    viewEl.classList.add('pip-view-animate');
+                }
+                document.getElementById(`navBtn-${t}`).classList.toggle('active', isTarget);
             });
             document.getElementById('mainScrollArea').scrollTop = 0;
             renderAll();
@@ -1851,6 +2197,9 @@
                     const imported = JSON.parse(e.target.result);
                     if (imported && Array.isArray(imported.skills)) {
                         appState = { ...getDefaultState(), ...imported };
+                        if (!Array.isArray(appState.attributes)) {
+                            appState.attributes = getDefaultAttributes();
+                        }
                         saveState();
                         renderAll();
                         triggerFeedback('levelup');
