@@ -365,7 +365,7 @@
                         <!-- Streak Counter -->
                         <div class="flex items-center gap-1 px-1.5 py-0.5 rounded border border-current" title="Дней учебы подряд">
                             <i class="fa-solid fa-fire"></i>
-                            <span id="headerStreak" class="font-extrabold">1 дн.</span>
+                            <span id="headerStreak" class="font-extrabold">0 дн.</span>
                         </div>
                         <button onclick="toggleSound()" class="p-1" aria-label="Звук">
                             <i id="headerSoundIcon" class="fa-solid fa-volume-high"></i>
@@ -392,7 +392,7 @@
                         </div>
 
                         <div class="pip-progress-track h-2.5 rounded-md">
-                            <div id="headerXPBar" class="pip-progress-fill" style="width: 30%;"></div>
+                            <div id="headerXPBar" class="pip-progress-fill" style="width: 0%;"></div>
                         </div>
                     </div>
                 </div>
@@ -411,7 +411,7 @@
                             <h1 class="text-sm font-extrabold uppercase tracking-wider flex items-center gap-1.5">
                                 <i class="fa-solid fa-graduation-cap"></i> Дисциплины и Навыки
                             </h1>
-                            <p class="text-[11px] opacity-75">Нажимайте +1 для мгновенного начисления опыта</p>
+                            <p class="text-[11px] opacity-75">Создавайте свои предметы и прокачивайте уровень</p>
                         </div>
                         <button onclick="openSheet('addSkillSheet')" class="pip-btn pip-btn-solid px-3 py-2 rounded-xl text-xs shrink-0">
                             <i class="fa-solid fa-plus"></i> Предмет
@@ -419,7 +419,7 @@
                     </div>
 
                     <!-- Horizontal Subject Pills for fast switching -->
-                    <div id="subjectPillsBar" class="flex items-center gap-1.5 overflow-x-auto pb-1">
+                    <div id="subjectPillsBar" class="flex items-center gap-1.5 overflow-x-auto pb-1 empty:hidden">
                         <!-- Rendered via JS -->
                     </div>
 
@@ -454,7 +454,7 @@
                             <div class="flex-1 min-w-0">
                                 <div class="text-[10px] uppercase tracking-widest opacity-75">КАРТА УЧАЩЕГОСЯ VAULT-TEC</div>
                                 <div class="text-base font-extrabold truncate" id="statCardName">Студент-Выживший</div>
-                                <div class="text-xs font-bold opacity-90 mb-2" id="statCardRank">Первокурсник-Выживший</div>
+                                <div class="text-xs font-bold opacity-90 mb-2" id="statCardRank">Ур. 1 • Абитуриент Убежища</div>
 
                                 <div class="grid grid-cols-3 gap-1.5 text-center text-[11px]">
                                     <div class="pip-box-subtle rounded-lg p-1.5">
@@ -467,7 +467,7 @@
                                     </div>
                                     <div class="pip-box-subtle rounded-lg p-1.5">
                                         <div class="opacity-70 text-[9px]">СТРИК</div>
-                                        <div class="font-extrabold text-xs" id="statStreak">1 дн.</div>
+                                        <div class="font-extrabold text-xs" id="statStreak">0 дн.</div>
                                     </div>
                                 </div>
                             </div>
@@ -522,7 +522,7 @@
                             </h1>
                             <p class="text-[11px] opacity-75" id="questsSubHeader">Активные задачи на день и неделю</p>
                         </div>
-                        <button onclick="openSheet('addQuestSheet')" class="pip-btn pip-btn-solid px-3 py-2 rounded-xl text-xs shrink-0">
+                        <button onclick="openQuestModal()" class="pip-btn pip-btn-solid px-3 py-2 rounded-xl text-xs shrink-0">
                             <i class="fa-solid fa-plus"></i> Задача
                         </button>
                     </div>
@@ -621,7 +621,7 @@
                 <button onclick="switchMobileTab('skills')" id="navBtn-skills" class="nav-tab-btn active py-2.5 px-1 flex flex-col items-center justify-center gap-1">
                     <div class="relative">
                         <i class="fa-solid fa-book-skull text-lg"></i>
-                        <span id="badgeSkills" class="absolute -top-1.5 -right-3 text-[9px] font-extrabold px-1 rounded bg-[var(--pip-primary)] text-[var(--pip-bg)]">4</span>
+                        <span id="badgeSkills" class="absolute -top-1.5 -right-3 text-[9px] font-extrabold px-1 rounded bg-[var(--pip-primary)] text-[var(--pip-bg)]">0</span>
                     </div>
                     <span class="text-[10px] font-extrabold uppercase tracking-wider">Предметы</span>
                 </button>
@@ -634,7 +634,7 @@
                 <button onclick="switchMobileTab('quests')" id="navBtn-quests" class="nav-tab-btn py-2.5 px-1 flex flex-col items-center justify-center gap-1">
                     <div class="relative">
                         <i class="fa-solid fa-list-check text-lg"></i>
-                        <span id="badgeQuests" class=" -top-1.5 -right-3 text-[9px] font-extrabold px-1 rounded bg-[var(--pip-primary)] text-[var(--pip-bg)]">2</span>
+                        <span id="badgeQuests" class="absolute -top-1.5 -right-3 text-[9px] font-extrabold px-1 rounded bg-[var(--pip-primary)] text-[var(--pip-bg)]" style="display: none;">0</span>
                     </div>
                     <span class="text-[10px] font-extrabold uppercase tracking-wider">Квесты</span>
                 </button>
@@ -642,7 +642,7 @@
                 <button onclick="switchMobileTab('perks')" id="navBtn-perks" class="nav-tab-btn py-2.5 px-1 flex flex-col items-center justify-center gap-1">
                     <div class="relative">
                         <i class="fa-solid fa-medal text-lg"></i>
-                        <span id="badgePerks" class="absolute -top-1.5 -right-3.5 text-[9px] font-extrabold px-1 rounded bg-[var(--pip-primary)] text-[var(--pip-bg)]">1/8</span>
+                        <span id="badgePerks" class="absolute -top-1.5 -right-3.5 text-[9px] font-extrabold px-1 rounded bg-[var(--pip-primary)] text-[var(--pip-bg)]">0/8</span>
                     </div>
                     <span class="text-[10px] font-extrabold uppercase tracking-wider">Перки</span>
                 </button>
@@ -665,8 +665,8 @@
 
                     <form onsubmit="handleAddSkill(event)" class="space-y-3 overflow-y-auto pr-1">
                         <div>
-                            <label class="block text-[11px] uppercase font-bold mb-1">Название дисциплины</label>
-                            <input type="text" id="newSkillName" required placeholder="Напр.: Физика, Дискретная математика" class="pip-input">
+                            <label class="block text-[11px] uppercase font-bold mb-1">Название дисциплины или навыка</label>
+                            <input type="text" id="newSkillName" required placeholder="Напр.: Матанализ, Физика, Python" class="pip-input">
                         </div>
 
                         <div class="grid grid-cols-2 gap-2.5">
@@ -677,6 +677,7 @@
                                     <option value="IT и Код">IT и Код</option>
                                     <option value="Естественные">Естественные</option>
                                     <option value="Языки">Языки</option>
+                                    <option value="Гуманитарные">Гуманитарные</option>
                                     <option value="Развитие">Саморазвитие</option>
                                 </select>
                             </div>
@@ -695,14 +696,14 @@
 
                         <div>
                             <label class="block text-[11px] uppercase font-bold mb-1">Краткая цель</label>
-                            <input type="text" id="newSkillDesc" placeholder="Напр.: Закрыть сессию на автомат" class="pip-input">
+                            <input type="text" id="newSkillDesc" placeholder="Напр.: Закрыть сессию на отлично" class="pip-input">
                         </div>
 
                         <div class="pip-box-subtle p-2.5 rounded-xl space-y-1.5">
                             <div class="text-[11px] font-bold uppercase">Набор критериев по умолчанию:</div>
                             <label class="flex items-center gap-2 text-xs cursor-pointer">
                                 <input type="radio" name="skillTemplate" value="university" checked class="accent-[var(--pip-primary)]">
-                                <span>Университетский (Практика + Теория + Выученные темы)</span>
+                                <span>Полный (Практика + Теория + Выученные темы)</span>
                             </label>
                             <label class="flex items-center gap-2 text-xs cursor-pointer">
                                 <input type="radio" name="skillTemplate" value="custom" class="accent-[var(--pip-primary)]">
@@ -711,7 +712,7 @@
                         </div>
 
                         <button type="submit" class="pip-btn pip-btn-solid w-full py-3 rounded-xl text-xs uppercase tracking-wider">
-                            <i class="fa-solid fa-check"></i> Создать предмет
+                            <i class="fa-solid fa-check"></i> Сохранить предмет
                         </button>
                     </form>
                 </div>
@@ -775,7 +776,7 @@
                     <form onsubmit="handleCreateQuest(event)" class="space-y-3">
                         <div>
                             <label class="block text-[11px] uppercase font-bold mb-1">Что нужно сделать?</label>
-                            <input type="text" id="questTitleInput" required placeholder="Напр.: Решить 10 интегралов из Демидовича" class="pip-input">
+                            <input type="text" id="questTitleInput" required placeholder="Напр.: Решить 10 задач из задачника" class="pip-input">
                         </div>
 
                         <div>
@@ -868,11 +869,11 @@
                         <i class="fa-solid fa-triangle-exclamation"></i> Сброс памяти терминала
                     </h3>
                     <p class="text-xs opacity-85">
-                        Сбросить текущий прогресс и восстановить стандартные предметы (Матанализ, Программирование, Линейная алгебра, Английский)?
+                        Вы уверены, что хотите полностью очистить все созданные предметы, квесты и вернуть уровень персонажа к 1?
                     </p>
                     <div class="grid grid-cols-2 gap-2 pt-1">
                         <button onclick="closeSheet('resetSheet')" class="pip-btn py-2.5 rounded-xl text-xs">Отмена</button>
-                        <button onclick="confirmResetData()" class="pip-btn pip-btn-solid py-2.5 rounded-xl text-xs">Сбросить</button>
+                        <button onclick="confirmResetData()" class="pip-btn pip-btn-solid py-2.5 rounded-xl text-xs">Очистить всё</button>
                     </div>
                 </div>
             </div>
@@ -904,7 +905,7 @@
          MOBILE APPLICATION LOGIC
          ========================================== -->
     <script>
-        const STORAGE_KEY = 'pip_study_3000_mobile_v2';
+        const STORAGE_KEY = 'pip_study_3000_clean_v1';
 
         const CHARACTER_RANKS = [
             { minLevel: 1, title: 'Абитуриент Убежища' },
@@ -928,13 +929,13 @@
             {
                 id: 'first_step',
                 title: 'Первый шаг из Убежища',
-                desc: 'Выполните первое учебное действие в любом предмете.',
+                desc: 'Выполните первое учебное действие в любом созданном предмете.',
                 icon: 'fa-shoe-prints',
                 check: (s) => s.totalActions >= 1
             },
             {
                 id: 'math_apprentice',
-                title: 'Укротитель Интегралов',
+                title: 'Укротитель Дисциплин',
                 desc: 'Достигните 3-го уровня в любом изучаемом предмете.',
                 icon: 'fa-square-root-variable',
                 check: (s) => s.skills.some(sk => getSkillLevel(sk) >= 3)
@@ -970,7 +971,7 @@
             {
                 id: 'polymath',
                 title: 'Полимат',
-                desc: 'Прокачайте минимум 4 предмета выше 60 XP каждый.',
+                desc: 'Создайте и прокачайте минимум 4 предмета выше 60 XP каждый.',
                 icon: 'fa-atom',
                 check: (s) => s.skills.length >= 4 && s.skills.every(sk => getSkillTotalXP(sk) >= 60)
             },
@@ -983,78 +984,21 @@
             }
         ];
 
+        // Изначальное состояние: Уровень 1 (0 XP), пустой список предметов и задач
         function getDefaultState() {
-            const today = new Date().toISOString().slice(0, 10);
             return {
                 studentName: 'Студент-Выживший',
                 theme: 'green',
                 crtEnabled: true,
                 soundEnabled: true,
-                selectedSkillId: 'math_analysis',
-                totalActions: 8,
+                selectedSkillId: null,
+                totalActions: 0,
                 bonusQuestXP: 0,
-                streakDays: 3,
-                lastStudyDate: today,
-                skills: [
-                    {
-                        id: 'math_analysis',
-                        name: 'Математический анализ',
-                        category: 'Точные науки',
-                        icon: 'fa-square-root-variable',
-                        description: 'Пределы, производные, интегралы, ряды и доказательства теорем.',
-                        criteria: [
-                            { id: 'ma_practice', name: 'Решение практики (задачи)', type: 'practice', unit: 'задач', count: 6, xpPerUnit: 15, totalXp: 90 },
-                            { id: 'ma_theory', name: 'Чтение теории и лекций', type: 'theory', unit: 'лекций', count: 3, xpPerUnit: 20, totalXp: 60 },
-                            { id: 'ma_memory', name: 'Выученные наизусть билеты/темы', type: 'memory', unit: 'тем', count: 2, xpPerUnit: 40, totalXp: 80 }
-                        ]
-                    },
-                    {
-                        id: 'cs_prog',
-                        name: 'Программирование (JS/Python)',
-                        category: 'IT и Код',
-                        icon: 'fa-laptop-code',
-                        description: 'Алгоритмы, лабораторные работы, структуры данных и практика кода.',
-                        criteria: [
-                            { id: 'cs_practice', name: 'Решение практики (код)', type: 'practice', unit: 'задач', count: 4, xpPerUnit: 20, totalXp: 80 },
-                            { id: 'cs_theory', name: 'Чтение документации/теории', type: 'theory', unit: 'глав', count: 2, xpPerUnit: 15, totalXp: 30 },
-                            { id: 'cs_memory', name: 'Выученные алгоритмы', type: 'memory', unit: 'тем', count: 1, xpPerUnit: 35, totalXp: 35 }
-                        ]
-                    },
-                    {
-                        id: 'linear_algebra',
-                        name: 'Линейная алгебра',
-                        category: 'Точные науки',
-                        icon: 'fa-border-all',
-                        description: 'Матрицы, определители, СЛАУ и векторные пространства.',
-                        criteria: [
-                            { id: 'la_practice', name: 'Решение практики (матрицы)', type: 'practice', unit: 'задач', count: 3, xpPerUnit: 15, totalXp: 45 },
-                            { id: 'la_theory', name: 'Чтение теории', type: 'theory', unit: 'лекций', count: 2, xpPerUnit: 20, totalXp: 40 },
-                            { id: 'la_memory', name: 'Выученные определения', type: 'memory', unit: 'билетов', count: 1, xpPerUnit: 35, totalXp: 35 }
-                        ]
-                    },
-                    {
-                        id: 'english_lang',
-                        name: 'Английский язык',
-                        category: 'Языки',
-                        icon: 'fa-language',
-                        description: 'Грамматика, чтение технической литературы и словарный запас.',
-                        criteria: [
-                            { id: 'en_practice', name: 'Практика и упражнения', type: 'practice', unit: 'упр.', count: 2, xpPerUnit: 15, totalXp: 30 },
-                            { id: 'en_theory', name: 'Чтение статей и правил', type: 'theory', unit: 'статей', count: 2, xpPerUnit: 15, totalXp: 30 },
-                            { id: 'en_memory', name: 'Выученные слова наизусть', type: 'memory', unit: 'наборов', count: 2, xpPerUnit: 25, totalXp: 50 }
-                        ]
-                    }
-                ],
-                quests: [
-                    { id: 'q1', title: 'Решить 5 задач по производным и пределам', skillId: 'math_analysis', criterionId: 'ma_practice', xpReward: 50, completed: false },
-                    { id: 'q2', title: 'Выучить наизусть доказательство теоремы Лагранжа', skillId: 'math_analysis', criterionId: 'ma_memory', xpReward: 50, completed: false },
-                    { id: 'q3', title: 'Сдать лабораторную работу по циклам', skillId: 'cs_prog', criterionId: 'cs_practice', xpReward: 100, completed: true }
-                ],
-                activityLog: [
-                    { time: '19:40', text: 'Матанализ: Выученные темы (+40 XP)' },
-                    { time: '18:15', text: 'Матанализ: Решение практики (+15 XP)' },
-                    { time: '16:05', text: 'Программирование: Практика (+20 XP)' }
-                ]
+                streakDays: 0,
+                lastStudyDate: null,
+                skills: [],
+                quests: [],
+                activityLog: []
             };
         }
 
@@ -1083,7 +1027,6 @@
         // Haptic + Sound Feedback
         let audioCtx = null;
         function triggerFeedback(type = 'click') {
-            // Haptic vibration on supported mobile browsers
             if (appState.soundEnabled && navigator.vibrate) {
                 if (type === 'click') navigator.vibrate(12);
                 else if (type === 'xp') navigator.vibrate([18, 30, 25]);
@@ -1192,7 +1135,7 @@
         function updateStreakOnAction() {
             const today = new Date().toISOString().slice(0, 10);
             if (appState.lastStudyDate !== today) {
-                appState.streakDays = (appState.streakDays || 1) + 1;
+                appState.streakDays = (appState.streakDays || 0) + 1;
                 appState.lastStudyDate = today;
             }
         }
@@ -1324,7 +1267,7 @@
             document.getElementById('headerCurrentXP').textContent = charInfo.currentLevelXp;
             document.getElementById('headerMaxXP').textContent = charInfo.xpPerLevel;
             document.getElementById('headerXPBar').style.width = `${charInfo.progressPct}%`;
-            document.getElementById('headerStreak').textContent = `${appState.streakDays || 1} дн.`;
+            document.getElementById('headerStreak').textContent = `${appState.streakDays || 0} дн.`;
 
             // Bottom Nav Badges
             document.getElementById('badgeSkills').textContent = appState.skills.length;
@@ -1338,12 +1281,36 @@
         }
 
         function renderSkillsView() {
-            if (!appState.skills.some(s => s.id === appState.selectedSkillId) && appState.skills.length > 0) {
-                appState.selectedSkillId = appState.skills[0].id;
+            if (!appState.skills.some(s => s.id === appState.selectedSkillId)) {
+                appState.selectedSkillId = appState.skills.length > 0 ? appState.skills[0].id : null;
+            }
+
+            const pillsBar = document.getElementById('subjectPillsBar');
+            const container = document.getElementById('activeSubjectContainer');
+
+            // Если у пользователя еще нет ни одного предмета
+            if (appState.skills.length === 0) {
+                pillsBar.innerHTML = '';
+                container.innerHTML = `
+                    <div class="pip-card rounded-2xl p-6 text-center space-y-3.5 my-2">
+                        <div class="w-16 h-16 rounded-2xl pip-border flex items-center justify-center text-3xl mx-auto">
+                            <i class="fa-solid fa-folder-plus"></i>
+                        </div>
+                        <div class="space-y-1">
+                            <h2 class="text-sm font-extrabold uppercase tracking-wider">База дисциплин пуста</h2>
+                            <p class="text-xs opacity-80 leading-relaxed">
+                                Ваш начальный уровень — <strong>1 (0 XP)</strong>. Добавьте свои собственные учебные предметы или навыки, чтобы начать отслеживать прогресс!
+                            </p>
+                        </div>
+                        <button onclick="openSheet('addSkillSheet')" class="pip-btn pip-btn-solid w-full py-3 rounded-xl text-xs uppercase tracking-wider">
+                            <i class="fa-solid fa-plus-circle"></i> Создать первый предмет
+                        </button>
+                    </div>
+                `;
+                return;
             }
 
             // Render Horizontal Subject Pills
-            const pillsBar = document.getElementById('subjectPillsBar');
             pillsBar.innerHTML = appState.skills.map(skill => {
                 const isSelected = skill.id === appState.selectedSkillId;
                 const sInfo = getSkillLevelInfo(skill);
@@ -1357,12 +1324,8 @@
                 `;
             }).join('');
 
-            const container = document.getElementById('activeSubjectContainer');
             const skill = appState.skills.find(s => s.id === appState.selectedSkillId);
-            if (!skill) {
-                container.innerHTML = `<div class="pip-card rounded-2xl p-6 text-center text-xs opacity-75">Добавьте свой первый предмет кнопкой «+ Предмет» выше.</div>`;
-                return;
-            }
+            if (!skill) return;
 
             const sInfo = getSkillLevelInfo(skill);
 
@@ -1428,10 +1391,9 @@
                             <span class="px-2.5 py-1 rounded-lg bg-[var(--pip-primary)] text-[var(--pip-bg)] font-extrabold text-xs">
                                 УР. ${sInfo.level}
                             </span>
-                            ${appState.skills.length > 1 ? `
                             <button onclick="deleteSkill('${skill.id}')" class="pip-btn w-8 h-8 rounded-lg text-xs opacity-65" title="Удалить предмет">
                                 <i class="fa-solid fa-trash-can"></i>
-                            </button>` : ''}
+                            </button>
                         </div>
                     </div>
 
@@ -1468,7 +1430,7 @@
                     <div class="text-[11px] font-extrabold uppercase flex items-center gap-1.5">
                         <i class="fa-solid fa-bolt"></i> Записать конкретную изученную тему:
                     </div>
-                    <input type="text" id="mobileQuickNoteInput" required placeholder="Напр.: Выучил таблицу производных" class="pip-input text-xs">
+                    <input type="text" id="mobileQuickNoteInput" required placeholder="Напр.: Конспект 1-й главы" class="pip-input text-xs">
                     <div class="grid grid-cols-12 gap-2">
                         <select id="mobileQuickNoteCrit" class="pip-input text-xs col-span-6 py-2">
                             ${skill.criteria.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('')}
@@ -1492,7 +1454,7 @@
             document.getElementById('statCardRank').textContent = `Ур. ${charInfo.level} • ${charInfo.rankTitle}`;
             document.getElementById('statTotalXP').textContent = charInfo.totalXp;
             document.getElementById('statActions').textContent = appState.totalActions || 0;
-            document.getElementById('statStreak').textContent = `${appState.streakDays || 1} дн.`;
+            document.getElementById('statStreak').textContent = `${appState.streakDays || 0} дн.`;
 
             const practiceXP = getTotalXPByType(appState, 'practice');
             const theoryXP = getTotalXPByType(appState, 'theory');
@@ -1503,7 +1465,7 @@
                 { letter: 'У', name: 'Упорство (Практика)', val: Math.min(10, 1 + Math.floor(practiceXP / 45)) },
                 { letter: 'Ч', name: 'Чтение (Теория и лекции)', val: Math.min(10, 1 + Math.floor(theoryXP / 40)) },
                 { letter: 'Е', name: 'Емкость памяти (Билеты)', val: Math.min(10, 1 + Math.floor(memoryXP / 45)) },
-                { letter: 'Б', name: 'Боеготовность (Квесты)', val: Math.min(10, 2 + doneQuests) },
+                { letter: 'Б', name: 'Боеготовность (Квесты)', val: Math.min(10, 1 + doneQuests) },
                 { letter: 'А', name: 'Активность (Ранг и стрик)', val: Math.min(10, charInfo.level) }
             ];
 
@@ -1521,24 +1483,29 @@
                 </div>
             `).join('');
 
-            document.getElementById('statSubjectSummaryList').innerHTML = appState.skills.map(s => {
-                const info = getSkillLevelInfo(s);
-                return `
-                    <div>
-                        <div class="flex justify-between text-xs mb-1">
-                            <span class="font-bold truncate"><i class="fa-solid ${s.icon} mr-1.5"></i>${escapeHtml(s.name)}</span>
-                            <span class="shrink-0">Ур. ${info.level} (${info.totalXp} XP)</span>
+            const summaryEl = document.getElementById('statSubjectSummaryList');
+            if (appState.skills.length === 0) {
+                summaryEl.innerHTML = `<div class="text-xs opacity-65">Предметы еще не созданы.</div>`;
+            } else {
+                summaryEl.innerHTML = appState.skills.map(s => {
+                    const info = getSkillLevelInfo(s);
+                    return `
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="font-bold truncate"><i class="fa-solid ${s.icon} mr-1.5"></i>${escapeHtml(s.name)}</span>
+                                <span class="shrink-0">Ур. ${info.level} (${info.totalXp} XP)</span>
+                            </div>
+                            <div class="pip-progress-track h-2.5 rounded">
+                                <div class="pip-progress-fill" style="width: ${Math.min(100, Math.round((info.totalXp / 400) * 100))}%;"></div>
+                            </div>
                         </div>
-                        <div class="pip-progress-track h-2.5 rounded">
-                            <div class="pip-progress-fill" style="width: ${Math.min(100, Math.round((info.totalXp / 400) * 100))}%;"></div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+                    `;
+                }).join('');
+            }
 
             const logEl = document.getElementById('mobileActivityLog');
             if (!appState.activityLog || appState.activityLog.length === 0) {
-                logEl.innerHTML = `<div class="opacity-65">Пока нет записей.</div>`;
+                logEl.innerHTML = `<div class="opacity-65">Пока нет записей активности.</div>`;
             } else {
                 logEl.innerHTML = appState.activityLog.map(item => `
                     <div class="py-1 border-b border-[var(--pip-primary-dim)] flex gap-2">
@@ -1549,14 +1516,31 @@
             }
         }
 
+        function openQuestModal() {
+            if (appState.skills.length === 0) {
+                triggerFeedback('click');
+                showToast('Сначала создайте хотя бы один предмет!', 'ВНИМАНИЕ');
+                switchMobileTab('skills');
+                openSheet('addSkillSheet');
+                return;
+            }
+            openSheet('addQuestSheet');
+        }
+
         function renderQuestsView() {
             const skillSelect = document.getElementById('questSkillSelect');
             if (skillSelect) {
-                const cur = skillSelect.value || (appState.skills[0] && appState.skills[0].id);
-                skillSelect.innerHTML = appState.skills.map(s =>
-                    `<option value="${s.id}" ${s.id === cur ? 'selected' : ''}>${escapeHtml(s.name)}</option>`
-                ).join('');
-                updateQuestCriterionDropdown();
+                if (appState.skills.length === 0) {
+                    skillSelect.innerHTML = `<option value="">Сначала создайте предмет</option>`;
+                    const critSelect = document.getElementById('questCriterionSelect');
+                    if (critSelect) critSelect.innerHTML = '';
+                } else {
+                    const cur = skillSelect.value || appState.skills[0].id;
+                    skillSelect.innerHTML = appState.skills.map(s =>
+                        `<option value="${s.id}" ${s.id === cur ? 'selected' : ''}>${escapeHtml(s.name)}</option>`
+                    ).join('');
+                    updateQuestCriterionDropdown();
+                }
             }
 
             const activeCount = appState.quests.filter(q => !q.completed).length;
@@ -1581,7 +1565,7 @@
                             <div class="min-w-0">
                                 <div class="font-extrabold text-xs sm:text-sm ${q.completed ? 'line-through' : ''}">${escapeHtml(q.title)}</div>
                                 <div class="text-[11px] opacity-80 mt-0.5">
-                                    ${escapeHtml(sk ? sk.name : 'Предмет')} • <strong>+${q.xpReward} XP</strong>
+                                    ${escapeHtml(sk ? sk.name : 'Общая задача')} • <strong>+${q.xpReward} XP</strong>
                                 </div>
                             </div>
                         </div>
@@ -1706,16 +1690,16 @@
             document.getElementById('newSkillName').value = '';
             document.getElementById('newSkillDesc').value = '';
             triggerFeedback('xp');
-            showToast(`Добавлен предмет: ${name}`, 'НОВЫЙ НАВЫК');
+            showToast(`Сохранен предмет: ${name}`, 'НОВЫЙ НАВЫК');
             renderAll();
         }
 
         function deleteSkill(skillId) {
-            if (appState.skills.length <= 1) return;
             triggerFeedback('click');
             appState.skills = appState.skills.filter(s => s.id !== skillId);
-            appState.selectedSkillId = appState.skills[0].id;
+            appState.selectedSkillId = appState.skills.length > 0 ? appState.skills[0].id : null;
             saveState();
+            showToast('Предмет удален', 'DEL');
             renderAll();
         }
 
@@ -1885,7 +1869,7 @@
             saveState();
             closeSheet('resetSheet');
             triggerFeedback('levelup');
-            showToast('Память терминала сброшена', 'RESET');
+            showToast('Память терминала очищена (Ур. 1)', 'RESET');
             renderAll();
         }
 
